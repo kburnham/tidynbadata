@@ -35,6 +35,7 @@ get_team_schedule <- function(team = tidynbadata[['DEFAULT_TEAM']],
            status = ifelse(schedule.playedStatus == 'COMPLETED', 'complete', NA),
            result = case_when(is.na(status) ~ NA_character_,
                               location == 'home' & score.homeScoreTotal > score.awayScoreTotal ~ 'win',
+                              location == 'away' & score.awayScoreTotal > score.homeScoreTotal ~ 'win',
                               TRUE ~ 'loss'),
            wins  = cumsum(result == 'win'),
            losses = cumsum(result == 'loss'),
@@ -151,7 +152,7 @@ get_raw_pbp <- function(game_id, use_archive = TRUE) {
                          params = list(game = game_id))
 
 
-  raw$api_json$plays <- raw$api_json$plays %>% set_tidynba_names(name_map = load_pbp_name_map())
+
 
   if (use_archive) saveRDS(raw, pbp_file_path)
   return(raw)
@@ -160,19 +161,30 @@ get_raw_pbp <- function(game_id, use_archive = TRUE) {
 }
 
 
-get_player_data <- function(team, force_reload = FALSE) {
-  team_id <- interpret_team(team)$id
+get_player_data <- function(force_reload = FALSE) {
   check_archive_dir()
   player_data_archive <- file.path(tidynbadata$ARCHIVE_DIR, 'player_data_archive')
   if (!dir.exists(player_data_archive)) dir.create(player_data_archive)
-  pd_file_path <- file.path(player_data_archive, glue('{team_id}.rds'))
+  pd_file_path <- file.path(player_data_archive, 'player_data.rds')
   if (file.exists(pd_file_path) & !force_reload) {
-    message(glue('Archived player data for game {game_id} found and is being returned.'))
+    message(glue('Archived player data found and is being returned.'))
     return(readRDS(pd_file_path))
   } else {
-    message(glue('No archived plyer data for game {game_id}
+    message(glue('No archived player data
                   found (or force_reload is TRUE),
                  making a new API call . . .'))
+
+    player_data <- msf_get_results(version = tidynbadata$MSF_VERSION,
+                                   league = 'nba',
+                                   feed = 'players',
+                                   season = tidynbadata$CURRENT_SEASON)
   }
 
+  saveRDS(player_data$api_json$players, pd_file_path)
+  return(player_data$api_json$players)
+
 }
+
+
+
+

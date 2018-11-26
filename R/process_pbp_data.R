@@ -32,7 +32,15 @@ process_raw_pbp <- function(game_id) {
   pbp <- raw_pbp[['api_json']][['plays']]
   game <- raw_pbp[['api_json']][['game']]
   pbp[['original_row']] <- seq(1:nrow(pbp))
-  pbp[['total_elapsed_seconds']] <- ((pbp$playStatus.quarter - 1) * 720) + pbp$playStatus.secondsElapsed
+  # this adds elapsed seconds since start of game, accounting for possible overtimes
+  pbp[['total_elapsed_seconds']] <- map2_dbl(pbp[['playStatus.quarter']],
+                                             pbp[['playStatus.secondsElapsed']],
+                                             function(x, y) {
+                                               tes <- if_else(x < 6,
+                                                             (x - 1) * 720 + y,
+                                                             2880 + ((x - 5) * 300) + y)
+                                             })
+  pbp[['game_id']] <- game_id
 
 
   # process each team separately first, join back later
@@ -47,17 +55,30 @@ process_raw_pbp <- function(game_id) {
   proc_away <- process_lineups(away_team, away_subs, game_id = game_id)
 
   # join the original play-by-play to each teams lineup record
-  final <- pbp %>% left_join(proc_home %>% select(-total_elapsed_seconds, home_team_pof = pof),
+  final <- pbp %>% left_join(proc_home %>% select(-total_elapsed_seconds,
+                                                  home_pof_vec = pof,
+                                                  home_segment_number = segment_number,
+                                                  home_pof_id = pof_id),
                              by = 'original_row',
                              suffix = c('', '.proc')) %>%
-    left_join(proc_away %>% select(-total_elapsed_seconds, away_team_pof = pof),
+    left_join(proc_away %>% select(-total_elapsed_seconds,
+                                   away_pof_vec = pof,
+                                   away_segment_number = segment_number,
+                                   away_pof_id = pof_id),
               by = 'original_row',
               suffix = c('', '.proc')) %>%
-    fill(home_team_pof, away_team_pof)
+    fill(home_pof_vec, away_pof_vec, home_segment_number, away_segment_number) %>%
+    mutate(home_pof_id = map_chr(home_pof_vec, make_lineup_id),
+           away_pof_id = map_chr(away_pof_vec, make_lineup_id),
+           seconds_since_last_event = total_elapsed_seconds - lag(total_elapsed_seconds, default = total_elapsed_seconds[1])
+           )
 
 
   home_pbp <- customize_pbp(final, team_id = home_team, opponent_id = away_team, loc = 'home')
   away_pbp <- customize_pbp(final, team_id = away_team, opponent_id = home_team, loc = 'away')
+
+
+
 
   home_pbp <- home_pbp %>% add_score_data()
   away_pbp <- away_pbp %>% add_score_data()
@@ -84,16 +105,33 @@ process_raw_pbp <- function(game_id) {
 
 customize_pbp <- function(pbp, team_id, opponent_id, loc) {
 
+  ## the jumpBall.tippedToPlayer column changed at one point
+  ## so if the old name exists, rename it
+  if ('jumpBall.tippedToPlayer' %in% names(pbp)) names(pbp)[names(pbp) == 'jumpBall.tippedToPlayer'] <- 'jumpBall.tippedToPlayer.id'
+  if ('violation.player' %in% names(pbp)) names(pbp)[names(pbp) == 'violation.player'] <- 'violation.player.id'
+
+  ## if no violations occur, those columns are not part of the export, but we want to add them
+  violation_columns <- c("violation.type", "violation.teamOrPersonal", "violation.team.id",
+                         "violation.team.abbreviation", "violation.player.id")
+
+  for (vc in violation_columns) if (!vc %in% names(pbp)) pbp[[vc]] <- NA
+
+  ## there are numerous extraneous player data columns. We only need to retain columns indication the player id
   custom <- pbp %>%
-    select(-ends_with('firstName'), # these columns are unnecassary and distracting
+    select(-ends_with('firstName'),
            -ends_with('lastName'),
            -ends_with('position'),
-           -ends_with('jerseyNumber')) %>%
+           -ends_with('jerseyNumber'))
+
+  # make sure we have all the columns we need
+  custom <- set_tidynba_names(custom, load_pbp_name_map())
+
+
+  custom <- custom %>%
     mutate(jumpBall.wonBy = case_when(is.na(jumpBall.wonBy) ~ NA_character_,
                                       jumpBall.wonBy == toupper(loc) ~ 'this_team',
                                       TRUE ~ 'opponent_team'),
-           ## TODO
-           # convert team.id cols to "this_team", "opponent_team" values
+
            rebound.team = case_when(is.na(rebound.team.id) ~ NA_character_,
                                     rebound.team.id == team_id ~ "this_team",
                                     rebound.team.id == opponent_id ~ 'opponent_team'
@@ -123,11 +161,40 @@ customize_pbp <- function(pbp, team_id, opponent_id, loc) {
                                       violation.team.id == team_id ~ 'this_team',
                                       violation.team.id == opponent_id ~ 'opponent_team'
            ),
+           event_type = case_when(!is.na(fieldGoalAttempt.team) ~ 'fga',
+                                  !is.na(freeThrowAttempt.team) ~ 'fta',
+                                  !is.na(rebound.team) ~ 'reb',
+                                  !is.na(turnover.team) ~ 'to',
+                                  !is.na(jumpBall.wonBy) ~ 'jb',
+                                  !is.na(foul.team) ~ 'foul',
+                                  !is.na(substitution.team) ~ 'sub',
+                                  !is.na(violation.team) ~ 'vio'
+                                  ),
+           event_team = case_when(event_type == 'fga' ~ fieldGoalAttempt.team,
+                                  event_type == 'fta' ~ freeThrowAttempt.team,
+                                  event_type == 'reb' ~ rebound.team,
+                                  event_type == 'to' ~ turnover.team,
+                                  event_type == 'jb' ~ jumpBall.wonBy,
+                                  event_type == 'foul' ~ foul.team,
+                                  event_type == 'sub' ~ substitution.team,
+                                  event_type == 'vio' ~ violation.team,
+                                  TRUE ~ NA_character_),
            team_id = team_id,
-           opponent_id = opponent_id) %>%
+           opponent_id = opponent_id
+           ) %>%
     set_names(names(.) %>%
                 str_replace('home', if_else(loc == 'home', 'this_team', 'opponent_team')) %>%
                 str_replace('away', if_else(loc == 'away', 'this_team', 'opponent_team')))
+  ## add segment data
+  # a segment is a period of time during the game where all five players on the floor remain the same
+  # a segment changes when a subsitution is made
+  # but sometimes several subs come in at once, each getting a different row in the data, we don't want to make a different segment when two or more
+  # players enter the game at the same time.
+
+
+
+
+
   return(custom)
 }
 
@@ -160,6 +227,19 @@ process_lineups <- function(team, subs, game_id) {
                    original_row = subs$original_row
   )
   pof_df <- bind_rows(first_row, pof_df)
+  # here we are adding the segment data
+  # a segment is an uninterrupted period of time during which the same five players are on the court
+  # a segment should increment the first time a sub comes in at a given time period, but not again for
+  # subs that come in at the same time
+  pof_df <- pof_df %>%
+    filter(!duplicated(total_elapsed_seconds)) %>%
+    mutate(segment_number = seq(nrow(.))) %>%
+    select(original_row, segment_number) %>%
+    right_join(pof_df, by = 'original_row') %>%
+    fill(segment_number)  %>%
+    # in addition to the pof vector, we want a character id that can be used for grouping
+    mutate(pof_id = make_lineup_id(unlist(pof)))
+
   return(pof_df)
 
 }
@@ -214,3 +294,13 @@ load_pbp_data <- function(game_id, team) {
   team_id <- interpret_team(team)$id
   return(pbp[[glue('`{team_id}`')]])
 }
+
+#' Add segment information to custom play-by-play. This creates a segement id for every row
+#' A segment is a contiguous period of time with the same 5 players on the court.
+add_segment_data <- function(pof, tes) {
+  #TODO
+  # not sure how to handle this yet
+
+
+}
+
