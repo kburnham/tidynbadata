@@ -12,7 +12,7 @@ make_lineup_id <- function(lineup) {
 
 
 break_lineup_id <- function(lineup_id)
-  return(lineup_id %>% str_split(sep = '-')) %>% sort()
+  return(lineup_id %>% str_split(pattern = '-') %>% unlist() %>% as.numeric() %>% sort())
 #
 # convert_lineup_id <- function(to = )
 
@@ -25,17 +25,17 @@ get_lineup_initials <- function(lineup, pd) {
       pull(inits)
   }
   inits <- map_chr(lineup, get_inits, pd = pd)
-  return(glue_collapse(inits, sep = '-'))
+  return(paste(inits, collapse = '-'))
 
 }
 
-get_lineup_initials <- function(lineup, pd) {
-  get_inits <- function(player_id, pd) {
-    return(pd %>% filter(player.id == player_id) %>% pull(player_inits))
-  }
-  inits <- map_chr(lineup, get_inits, pd = pd)
-  return(inits)
-}
+# get_lineup_initials <- function(lineup, pd) {
+#   get_inits <- function(player_id, pd) {
+#     return(pd %>% filter(player.id == player_id) %>% pull(player_inits))
+#   }
+#   inits <- map_chr(lineup, get_inits, pd = pd)
+#   return(inits)
+# }
 
 #g1$this_team_pof_vec[1] %>% unlist() %>% get_lineup_initials()
 

@@ -117,7 +117,7 @@ get_lineup <- function(game_id, team, use_archive = TRUE) {
                            params = list(game = game_id))
 
 
-    lu <- raw$api_json$teamLineups$expected.lineupPositions[[which(raw$api_json$teamLineups$team.id == team_id)]] %>%
+    lu <- raw$api_json$teamLineups$actual.lineupPositions[[which(raw$api_json$teamLineups$team.id == team_id)]] %>%
       mutate(position = str_replace(position, '[0-9]', '')) %>% arrange(desc(position))
     if (use_archive) saveRDS(lu, lu_file_path)
     return(lu)

@@ -103,7 +103,7 @@ load_pbp_name_map <- function() {
     'home_segment_number' = 'home_segment_number',
     'away_segment_number' = 'away_segment_number',
     'game_id' = 'game_id',
-    'seconds_since_last_event' = 'seconds_since_last_event'
+    'seconds_until_next_event' = 'seconds_until_next_event'
   )
   return(name_map)
 }

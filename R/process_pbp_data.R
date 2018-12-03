@@ -31,6 +31,10 @@ process_raw_pbp <- function(game_id) {
   raw_pbp <- get_raw_pbp(game_id)
   pbp <- raw_pbp[['api_json']][['plays']]
   game <- raw_pbp[['api_json']][['game']]
+
+
+  pbp <- fix_pbp(pbp = pbp, game_id = game_id)
+
   pbp[['original_row']] <- seq(1:nrow(pbp))
   # this adds elapsed seconds since start of game, accounting for possible overtimes
   pbp[['total_elapsed_seconds']] <- map2_dbl(pbp[['playStatus.quarter']],
@@ -40,8 +44,8 @@ process_raw_pbp <- function(game_id) {
                                                              (x - 1) * 720 + y,
                                                              2880 + ((x - 5) * 300) + y)
                                              })
-  pbp[['game_id']] <- game_id
 
+  pbp[['game_id']] <- game_id
 
   # process each team separately first, join back later
   home_team <- game$homeTeam$id
@@ -49,6 +53,9 @@ process_raw_pbp <- function(game_id) {
 
   home_subs <- pbp %>% filter(substitution.team.id == home_team)
   away_subs <- pbp %>% filter(substitution.team.id == away_team)
+  ## there is a missing substitution in the Knicks-Bulls 2 OT game, Noah Vonleh played the whole 2nd OT without recording a stat
+  #
+
 
   # process lineups for each team
   proc_home <- process_lineups(home_team, home_subs, game_id = game_id)
@@ -70,7 +77,7 @@ process_raw_pbp <- function(game_id) {
     fill(home_pof_vec, away_pof_vec, home_segment_number, away_segment_number) %>%
     mutate(home_pof_id = map_chr(home_pof_vec, make_lineup_id),
            away_pof_id = map_chr(away_pof_vec, make_lineup_id),
-           seconds_since_last_event = total_elapsed_seconds - lag(total_elapsed_seconds, default = total_elapsed_seconds[1])
+           seconds_until_next_event = lead(total_elapsed_seconds, default = max(total_elapsed_seconds)) - total_elapsed_seconds
            )
 
 
@@ -108,13 +115,12 @@ customize_pbp <- function(pbp, team_id, opponent_id, loc) {
   ## the jumpBall.tippedToPlayer column changed at one point
   ## so if the old name exists, rename it
   if ('jumpBall.tippedToPlayer' %in% names(pbp)) names(pbp)[names(pbp) == 'jumpBall.tippedToPlayer'] <- 'jumpBall.tippedToPlayer.id'
-  if ('violation.player' %in% names(pbp)) names(pbp)[names(pbp) == 'violation.player'] <- 'violation.player.id'
+  if ('violation.player' %in% names(pbp) & !'violation.player.id' %in% names(pbp)) {
+    names(pbp)[names(pbp) == 'violation.player'] <- 'violation.player.id'
+    pbp$violation.player <- NULL
+  }
 
-  ## if no violations occur, those columns are not part of the export, but we want to add them
-  violation_columns <- c("violation.type", "violation.teamOrPersonal", "violation.team.id",
-                         "violation.team.abbreviation", "violation.player.id")
 
-  for (vc in violation_columns) if (!vc %in% names(pbp)) pbp[[vc]] <- NA
 
   ## there are numerous extraneous player data columns. We only need to retain columns indication the player id
   custom <- pbp %>%
@@ -163,7 +169,8 @@ customize_pbp <- function(pbp, team_id, opponent_id, loc) {
            ),
            event_type = case_when(!is.na(fieldGoalAttempt.team) ~ 'fga',
                                   !is.na(freeThrowAttempt.team) ~ 'fta',
-                                  !is.na(rebound.team) ~ 'reb',
+                                  !is.na(rebound.team) & rebound.type == 'OFFENSIVE' ~ 'oreb',
+                                  !is.na(rebound.team) ~ 'dreb',
                                   !is.na(turnover.team) ~ 'to',
                                   !is.na(jumpBall.wonBy) ~ 'jb',
                                   !is.na(foul.team) ~ 'foul',
@@ -172,26 +179,51 @@ customize_pbp <- function(pbp, team_id, opponent_id, loc) {
                                   ),
            event_team = case_when(event_type == 'fga' ~ fieldGoalAttempt.team,
                                   event_type == 'fta' ~ freeThrowAttempt.team,
-                                  event_type == 'reb' ~ rebound.team,
+                                  event_type == 'oreb' ~ rebound.team,
+                                  event_type == 'dreb' ~ rebound.team,
                                   event_type == 'to' ~ turnover.team,
                                   event_type == 'jb' ~ jumpBall.wonBy,
                                   event_type == 'foul' ~ foul.team,
                                   event_type == 'sub' ~ substitution.team,
                                   event_type == 'vio' ~ violation.team,
                                   TRUE ~ NA_character_),
+           event_type_detail = glue('{event_type}_{if_else(event_team == "this_team", "this", "opp")}'),
+           event_player = case_when(event_type == 'fga' ~ fieldGoalAttempt.shootingPlayer.id,
+                                    event_type == 'fta'  ~ freeThrowAttempt.shootingPlayer.id,
+                                    event_type %in% c('oreb', 'dreb') ~ rebound.retrievingPlayer.id,
+                                    event_type == 'to' ~ turnover.lostByPlayer.id,
+                                    event_type == 'jb' ~ ifelse(loc == 'home', jumpBall.homePlayer.id, jumpBall.awayPlayer.id),
+                                    event_type == 'foul' ~ foul.penalizedPlayer.id,
+                                    event_type == 'sub' ~ substitution.incomingPlayer.id,
+                                    event_type == 'vio' ~ violation.player.id),
            team_id = team_id,
-           opponent_id = opponent_id
+           opponent_id = opponent_id,
+           possession_change = case_when(fieldGoalAttempt.result == 'SCORED' ~ TRUE,
+                                         event_type == 'to' ~ TRUE,
+                                         event_type == 'dreb' ~ TRUE,
+                                         )
            ) %>%
     set_names(names(.) %>%
                 str_replace('home', if_else(loc == 'home', 'this_team', 'opponent_team')) %>%
                 str_replace('away', if_else(loc == 'away', 'this_team', 'opponent_team')))
-  ## add segment data
-  # a segment is a period of time during the game where all five players on the floor remain the same
-  # a segment changes when a subsitution is made
-  # but sometimes several subs come in at once, each getting a different row in the data, we don't want to make a different segment when two or more
-  # players enter the game at the same time.
+
+  ## sometimes rebound types are not recorded, we are labelled DEFENSIVE, but we want a warning
+  wh <- which(custom$event_type %in% c('oreb', 'dreb') & is.na(custom$rebound.type))
+  msg <- glue('There were {length(wh)} rebounds of unknown type that have been labelled as "DEFENSIVE"')
+  if (length(wh) > 0) message(msg)
 
 
+  ## check columns that should have no NAs
+  no_na_cols <- c('event_type', 'event_team', 'description')
+  walk(no_na_cols, function(x) {
+    nas <- which(is.na(custom[[x]]))
+    if (length(nas) > 10) {
+      stop('There were ', length(nas), ' NAs in the ', x, ' column.')
+    } else if (length(nas) > 0) {
+      print(nas)
+      stop('The ', x , ' column has NAs. See above for indexes of rows with NAs')
+    }
+  })
 
 
 

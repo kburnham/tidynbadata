@@ -9,6 +9,10 @@ check_archive_dir <- function() {
 
 
 #' Given a team input of unknown type (id, name, abbreviation) return all 3
+#' @param team_input a team id, team abbr, team name or team city to be interpreted
+#' @return a data.frame giving the id, abbr, name and city of the input team
+#'
+#'
 interpret_team <- function(team_input) {
   if (team_input %in% tidynbadata$TEAM_DATA$id) return(tidynbadata$TEAM_DATA %>% filter(id == team_input))
   if (team_input %in% tidynbadata$TEAM_DATA$abbr) return(tidynbadata$TEAM_DATA %>% filter(abbr == team_input))
