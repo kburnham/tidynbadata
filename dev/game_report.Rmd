@@ -10,6 +10,7 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
+
 library(mysportsfeedsR)
 library(tidyverse)
 library(glue)
@@ -20,18 +21,18 @@ library(tidynbadata)
 
 authenticate_v2_x(apikey = 'abd52306-deb4-4204-8605-e877fc')
 
-walk(list.files('R', pattern = '.R$', full.names = TRUE), function(x) {
-  message(glue('loading {basename(x)} . . .'))
-  source(x)
-})
+# walk(list.files('R', pattern = '.R$', full.names = TRUE), function(x) {
+#   message(glue('loading {basename(x)} . . .'))
+#   source(x)
+# })
 
 
-team <- 'Knicks'
-team_id <- interpret_team(team)$id
+team_id <- 83
+team_name <- 'Knicks'
 
 sched <- get_team_schedule()
 game_ids <- sched %>% filter(status == 'complete') %>% pull(msf_game_id)
-games <- game_ids %>% map(load_pbp_data, team = team)
+games <- game_ids %>% map(load_pbp_data, team = team_id)
 all_games <- do.call('bind_rows', games)
 
 

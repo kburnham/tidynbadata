@@ -1,19 +1,30 @@
 ## pbp fix functions - for pbps with known errors, we fix those errors with the fix_pbp function
 
 
+# I want to change this to input and output a full raw_msf_pbp list rather
+# than just the pbp data
 
-fix_pbp <- function(pbp, game_id) {
 
-  ## if no violations occur, those columns are not part of the export, but we want to add them
-  if ('violation.player' %in% names(pbp) & !'violation.player.id' %in% names(pbp)) {
-    pbp$violation.player.id <- pbp$violation.player
-    pbp$violation.player <- NULL
+fix_pbp <- function(raw_msf_pbp) {
+  game_id <- raw_msf_pbp[['api_json']][['game']][['id']]
+  # detach the pbp data, but don't forget to reattach
+  plays <- raw_msf_pbp[['api_json']][['plays']]
+  ## sometimes there are 'player.id' columns that are tagged as just 'player'
+  # find and fix those here
+  old_names <- names(plays)
+  names(plays) <- str_replace(names(plays), regex('player$'), 'player.id')
+  if (!identical(names(plays), old_names(plays))) {
+    walk(setdiff(names(plays), old_names),
+         ~message(glue('{.} renamed from {str_replace(., ".id", "")}
+                       for game {game_id}')))
   }
-  if (!'violation.type' %in% names(pbp)) pbp$violation.type <- NA_character_
-  if (!'violation.player.id' %in% names(pbp)) pbp$violation.player.id <- NA_integer_
-  if (!'violation.team.id' %in% names(pbp)) pbp$violation.team.id <- NA_integer_
-  if (!'violation.teamOrPersonal' %in% names(pbp)) pbp$violation.teamOrPersonal <- NA_character_
-  if (!'violation.team.abbreviation' %in% names(pbp)) pbp$violation.team.abbreviation <- NA_character_
+
+
+
+  vio_cols <- c("violation.type", "violation.teamOrPersonal", "violation.team.id",
+                "violation.player.id")
+
+  for (vc in vio_cols) if (!vc %in% names(plays)) plays[[vc]] <- NA
   ## make sure that all id columns are treated as integers
   id_cols <- pbp %>% select(ends_with('.id')) %>% names()
   for (col in id_cols) pbp[[col]] <- as.integer(pbp[[col]])
@@ -39,12 +50,13 @@ fix_pbp <- function(pbp, game_id) {
 
 
   } else if (game_id == 47870) {
-    # these is a rebound in this game that is called defensive, but should be offensive
+    # there is a rebound in this game that is called defensive,
+    # but should be offensive
     ix <- 63
     pbp$rebound.type[ix] <- 'OFFENSIVE'
   } else {
     #
   }
 
-  return(pbp)
+  return(raw_msf_pbp)
 }

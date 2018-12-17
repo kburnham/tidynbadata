@@ -1,5 +1,10 @@
 #' Check that the archive directory exists
-#' @keywords internal
+#'
+#'
+#'
+#'
+#'
+#' @return NULL
 #'
 check_archive_dir <- function() {
   if (!dir.exists(tidynbadata$ARCHIVE_DIR)) stop(glue('The archive dir ({tidynbadata$ARCHIVE_DIR}) could not be found. You must create it

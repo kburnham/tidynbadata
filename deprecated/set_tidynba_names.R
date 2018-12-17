@@ -94,7 +94,7 @@ load_pbp_name_map <- function() {
     'violation.team.id' = 'violation.team.id',
     'violation.team.abbreviation' = 'violation.team.abbreviation',
     'violation.player.id' = 'violation.player.id',
-    'original_row' = 'original_row',
+    'original_row' = 'original_row', # how can I make this a unique row?
     'total_elapsed_seconds' = 'total_elapsed_seconds',
     'home_pof_vec' = 'home_pof_vec',
     'away_pof_vec' = 'away_pof_vec',

@@ -53,12 +53,10 @@ process_raw_pbp <- function(game_id) {
 
   home_subs <- pbp %>% filter(substitution.team.id == home_team)
   away_subs <- pbp %>% filter(substitution.team.id == away_team)
-  ## there is a missing substitution in the Knicks-Bulls 2 OT game, Noah Vonleh played the whole 2nd OT without recording a stat
-  #
-
 
   # process lineups for each team
   proc_home <- process_lineups(home_team, home_subs, game_id = game_id)
+
   proc_away <- process_lineups(away_team, away_subs, game_id = game_id)
 
   # join the original play-by-play to each teams lineup record
@@ -207,7 +205,7 @@ customize_pbp <- function(pbp, team_id, opponent_id, loc) {
                 str_replace('home', if_else(loc == 'home', 'this_team', 'opponent_team')) %>%
                 str_replace('away', if_else(loc == 'away', 'this_team', 'opponent_team')))
 
-  ## sometimes rebound types are not recorded, we are labelled DEFENSIVE, but we want a warning
+  ## sometimes rebound types are not recorded, we default to DEFENSIVE, but we want a warning
   wh <- which(custom$event_type %in% c('oreb', 'dreb') & is.na(custom$rebound.type))
   msg <- glue('There were {length(wh)} rebounds of unknown type that have been labelled as "DEFENSIVE"')
   if (length(wh) > 0) message(msg)
@@ -244,7 +242,7 @@ process_lineups <- function(team, subs, game_id) {
   pof <- get_lineup(game_id, team) %>%
     filter(position == 'Starter') %>%
     pull(player.id)
-  first_row <- tibble(pof = list(pof), total_elapsed_seconds = 0, original_row = 1)
+  first_row <- tibble(pof = list(pof), gs_total_elapsed_seconds = 0, play_id = 1)
   players_in <- subs$substitution.incomingPlayer.id
   players_out <- subs$substitution.outgoingPlayer.id
 
@@ -255,8 +253,8 @@ process_lineups <- function(team, subs, game_id) {
   }
 
   pof_df <- tibble(pof = players_on_the_floor,
-                   total_elapsed_seconds = subs$total_elapsed_seconds,
-                   original_row = subs$original_row
+                   gs_total_elapsed_seconds = subs$gs_total_elapsed_seconds,
+                   play_id = subs$play_id
   )
   pof_df <- bind_rows(first_row, pof_df)
   # here we are adding the segment data
@@ -264,10 +262,12 @@ process_lineups <- function(team, subs, game_id) {
   # a segment should increment the first time a sub comes in at a given time period, but not again for
   # subs that come in at the same time
   pof_df <- pof_df %>%
-    filter(!duplicated(total_elapsed_seconds)) %>%
+    # create segement numbers by filtering to unique time_elapsed
+    filter(!duplicated(gs_total_elapsed_seconds)) %>%
     mutate(segment_number = seq(nrow(.))) %>%
-    select(original_row, segment_number) %>%
-    right_join(pof_df, by = 'original_row') %>%
+    select(play_id, segment_number) %>%
+    # then join back to the original data and fill
+    right_join(pof_df, by = 'play_id') %>%
     fill(segment_number)  %>%
     # in addition to the pof vector, we want a character id that can be used for grouping
     mutate(pof_id = make_lineup_id(unlist(pof)))
@@ -318,7 +318,11 @@ add_score_data <- function(custom_pbp) {
 }
 #'
 #'
+#' Load customized play-by-play data for a given game and team
+#' @param game_id the msf_game_id for the desired game
+#' @param team the id, name, city or abbr of the desired team
 #'
+#' @return a pbp data.frame
 #'
 load_pbp_data <- function(game_id, team) {
   ## check the archive, if there is one, load and return, if not, load raw, process, archive and return

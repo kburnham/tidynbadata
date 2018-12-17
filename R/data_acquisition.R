@@ -9,10 +9,12 @@
 #' @family data_acquisition
 #' @return a tibble
 
-get_team_schedule <- function(team = tidynbadata[['DEFAULT_TEAM']],
-                              season = tidynbadata[['CURRENT_SEASON']],
-                              version = tidynbadata[['MSF_VERSION']]
+get_team_schedule <- function(team,
+                              season = "2018-2019-regular",
+                              version = "2.0"
                               ) {
+
+  team <- interpret_team(team)$abbr
   all_games <- msf_get_results(league = 'nba',
                                season = season,
                                feed = 'seasonal_games',
@@ -50,37 +52,6 @@ get_team_schedule <- function(team = tidynbadata[['DEFAULT_TEAM']],
 
 
 
-#' Get the box score for a given game id
-#'
-#' @param game_id the msf game id for the requested game
-#' @param use_archive when TRUE (the default) will archive the raw download to tidynbadata$ARCHIVE_DIR
-#'
-get_raw_box_score <- function(game_id, use_archive = TRUE) {
-
-
-  if (use_archive) {
-    check_archive_dir()
-    bs_archive <- file.path(tidynbadata$ARCHIVE_DIR, 'box_score_archive')
-    if (!dir.exists(bs_archive)) dir.create(bs_archive)
-    bs_file_path <- file.path(bs_archive, glue('{game_id}.rds'))
-    if (file.exists(bs_file_path)) {
-      message(glue('Archived box score for game {game_id} found and is being returned. To force a new API call, `set use_archive = FALSE`'))
-      return(readRDS(bs_file_path))
-    } else {
-      message(glue('No archive for game {game_id} found, making a new API call . . .'))
-    }
-  }
-
-  game <- msf_get_results(league = 'nba',
-                          season = tidynbadata[['CURRENT_SEASON']],
-                          version = tidynbadata[['MSF_VERSION']],
-                          feed = 'game_boxscore',
-                          params = list(game = game_id)
-  )
-  if (use_archive) saveRDS(game, bs_file_path)
-  return(game)
-
-}
 
 
 

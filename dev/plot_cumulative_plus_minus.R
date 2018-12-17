@@ -61,7 +61,7 @@ bsdf <- do.call('bind_rows', bs_list2)
 
 
 bsdf %>% count(game_num)
-bs %>% filter(min_played > 100) %>% pull(last_name) %>% dput
+#bs %>% filter(min_played > 100) %>% pull(last_name) %>% dput
 
 p <- bsdf %>% group_by(last_name) %>% filter(last_name %in% c("Hardaway Jr.", "Thomas", "Kanter", "Hezonja", "Vonleh", "Burke",
                                                          "Ntilikina", "Dotson", "Trier", "Robinson", "Mudiay")) %>%
