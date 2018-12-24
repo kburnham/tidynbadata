@@ -4,12 +4,13 @@
 \alias{get_raw_pbp}
 \title{Get a raw copy of a game's play-by-play data from the local archive when possible}
 \usage{
-get_raw_pbp(game_id, use_archive = TRUE)
+get_raw_pbp(game_id)
 }
 \arguments{
 \item{game_id}{the msf game id for the game}
-
-\item{use_archive}{when TRUE (the default) will first check locally for a copy and if not make a msf api call}
+}
+\value{
+a raw play-by-play object from mysportsfeeds, this is also archived
 }
 \description{
 Get a raw copy of a game's play-by-play data from the local archive when possible

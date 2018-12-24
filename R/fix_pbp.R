@@ -12,8 +12,8 @@ fix_pbp <- function(raw_msf_pbp) {
   ## sometimes there are 'player.id' columns that are tagged as just 'player'
   # find and fix those here
   old_names <- names(plays)
-  names(plays) <- str_replace(names(plays), regex('player$'), 'player.id')
-  if (!identical(names(plays), old_names(plays))) {
+  names(plays) <- str_replace(names(plays), regex('Player$'), 'Player.id')
+  if (!identical(names(plays), old_names)) {
     walk(setdiff(names(plays), old_names),
          ~message(glue('{.} renamed from {str_replace(., ".id", "")}
                        for game {game_id}')))
@@ -26,11 +26,15 @@ fix_pbp <- function(raw_msf_pbp) {
 
   for (vc in vio_cols) if (!vc %in% names(plays)) plays[[vc]] <- NA
   ## make sure that all id columns are treated as integers
-  id_cols <- pbp %>% select(ends_with('.id')) %>% names()
-  for (col in id_cols) pbp[[col]] <- as.integer(pbp[[col]])
+  id_cols <- plays %>% select(ends_with('.id')) %>% names()
+  for (col in id_cols) plays[[col]] <- as.integer(plays[[col]])
 
   if (game_id == 47712)  {
-    ix <- which(pbp$description == "Emmanuel Mudiay added for start of quarter" & pbp$playStatus.quarter == 6)
+    ix <- which(plays$description == "Emmanuel Mudiay added for start of quarter"
+                & plays$playStatus.quarter == 6)
+    if (str_detect(description, 'Vonleh')) stop('It appears that the missing
+                                                row of game_id 47712 has been fixed.
+                                                Check the raw to be sure.')
     new_row = tibble(description = "Noah Vonleh added for start of quarter",
                      substitution.incomingPlayer.id = 9451L,
                      total_elapsed_seconds = 3180L,
@@ -43,9 +47,9 @@ fix_pbp <- function(raw_msf_pbp) {
                      playStatus.quarter = 6L,
                      playStatus.secondsElapsed = 0L
     )
-    pbp <- bind_rows(pbp %>% slice(1:ix),
+    plays <- bind_rows(plays %>% slice(1:ix),
                      new_row,
-                     pbp %>% slice((ix + 1): nrow(pbp))
+                     plays %>% slice((ix + 1): nrow(plays))
     )
 
 
@@ -53,10 +57,12 @@ fix_pbp <- function(raw_msf_pbp) {
     # there is a rebound in this game that is called defensive,
     # but should be offensive
     ix <- 63
-    pbp$rebound.type[ix] <- 'OFFENSIVE'
-  } else {
-    #
+    plays$rebound.type[ix] <- 'OFFENSIVE'
   }
+
+  # need to reattach the fixed play data here
+  raw_msf_pbp[['api_json']][['plays']] <- plays
+
 
   return(raw_msf_pbp)
 }

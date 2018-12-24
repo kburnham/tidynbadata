@@ -9,4 +9,3 @@ check_archive_dir()
 \description{
 Check that the archive directory exists
 }
-\keyword{internal}

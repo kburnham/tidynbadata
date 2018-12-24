@@ -1,43 +1,28 @@
-## process_msf_pbp
-# this will:
-# check for an archived pbp, if not found:
-
-# 1 these steps are API source specific
-  # load a raw msf pbp file - load_raw_pbp()
-  # correct any known errors in the pbp - fix_pbp()
-  # procure and rename the required raw columns, drop the unneccesary - get_msf_raw_columns()
-  #  add lineup info
-  # split the pbp into two 'perspectived' data.frames
-#
-# then we can add our derived columns
-  # make the necessary transforms so that the output has all required columns (see the gsheet) - customize_pbp()
-
-   # score info
-   # 'this' v 'opp' columns
-   # event columns, gs_event_type, event_detail
-   # archive the 2 pbps
-
-
 #' High level function for converting raw msf pbp to a tidynbadata pbp tibble
 #'
+#' Typically it is not necessary to call this function directly. It is better to
+#' use \code{load_pbp(game_id, team)} which will handle acquisition of the
+#' raw data and archiving of the results.
+#'
 #' @param game_id
+#' @importFrom dplyr left_join mutate lead
+#' @importFrom tidyr fill
 #'
 #' @return a length 2 list of pbp tibbles, one for each team involved.
 #' This list is also archived.
-
-process_msf_pbp <- function(game_id) {
-  raw_msf_pbp <- get_raw_pbp(game_id)
-
-  #raw_msf_pbp <- fix_pbp(raw_msf_pbp)
+#'
+process_msf_pbp <- function(raw_msf_pbp) {
+  raw_msf_pbp <- fix_pbp(raw_msf_pbp)
   plays <- get_msf_raw_columns(raw_msf_pbp)
   game <- raw_msf_pbp[['api_json']][['game']]
+  game_id <- game[['id']]
   home_team <- game[['homeTeam']][['id']]
   away_team <- game[['awayTeam']][['id']]
   # add play_id (= row number) and game_id columns
   plays <- plays %>%
     mutate(play_id = seq(nrow(.)),
            game_id = game_id,
-           gs_total_elapsed_seconds = map2_dbl(playStatus.quarter,
+           gs_total_elapsed_seconds = purrr::map2_dbl(playStatus.quarter,
                                                playStatus.secondsElapsed,
                                                compute_tes)
     )
@@ -65,8 +50,8 @@ process_msf_pbp <- function(game_id) {
               by = 'play_id',
               suffix = c('', '.proc')) %>%
     fill(home_pof_vec, away_pof_vec, home_segment_number, away_segment_number) %>%
-    mutate(home_pof_id = map_chr(home_pof_vec, make_lineup_id),
-           away_pof_id = map_chr(away_pof_vec, make_lineup_id),
+    mutate(home_pof_id = purrr::map_chr(home_pof_vec, make_lineup_id),
+           away_pof_id = purrr::map_chr(away_pof_vec, make_lineup_id),
            gs_seconds_until_next_event = lead(gs_total_elapsed_seconds,
                                               default = max(gs_total_elapsed_seconds)) - gs_total_elapsed_seconds
     )
@@ -86,8 +71,17 @@ process_msf_pbp <- function(game_id) {
 
 
 }
-#' Extract the raw columns needed from a provided mysportsfeeds nba play-by-play,
-#' rename to tidynbadata names and drop the columns we don't need
+
+
+#' Extract the raw columns needed from a provided mysportsfeeds nba play-by-play
+#'  and drop the columns we don't need
+#'
+#'  This function is used by \code{process_msf_pbp()}
+#'
+#'  @param raw_msf_pbp the list returned by \code{get_raw_pbp(game_id)}
+#' @importFrom dplyr setdiff select
+#'  @return the play by by data from the raw_msf_pbp with unnecessary columns
+#'  removed
 get_msf_raw_columns <- function(raw_msf_pbp) {
   # violation columns may not exist, need to create with all NAs
   #
@@ -135,19 +129,16 @@ get_msf_raw_columns <- function(raw_msf_pbp) {
 
 }
 
-# 0 check archive
-# 1 load the raw
-# 2 check for required cols, drop unecessary (get_msf_raw_cols())
-# 3 add lineup info for home/away (with lots of error checking) (we do it here because we don't want to do it 2x)
-# 4 split for customization
-# 5 convert team id cols to this/opp cols
-# - by this point the data should be API agnostic
-# 6 add tidynbacols - time info, score info,
-# archive
+
 
 
 
 #' compute the total time elapsed in the game given the quarter and time elapsed
+#' @param x the quarter number (5+ for overtime periods)
+#' @param y seconds elapsed since the beginning of the quarter
+#' @return an integer indicating the total number of gametime seconds since the
+#' start of the game
+#' @importFrom dplyr if_else
 compute_tes <- function(x, y) {
   # this handles infinite overtime periods
   tes <- if_else(x < 6,
@@ -156,6 +147,18 @@ compute_tes <- function(x, y) {
 }
 
 
+#' Transform raw pbp data so that it is specific to one of the teams
+#'
+#' Used internally by process_msf_pbp()
+#'
+#' @param plays a raw data.frame from msf play-by-play data
+#' @param team_id id of the reference team
+#' @param opponent_id id of the opponent team
+#' @param loc either 'home' or 'away' indicating the location from the
+#' perspective of the reference team
+#' @importFrom dplyr transmute case_when if_else
+#' @return a data.frame with customized pbp data
+#'
 customize_msf_pbp <- function(plays, team_id, opponent_id, loc) {
 
   loc <- toupper(loc)
@@ -205,7 +208,7 @@ customize_msf_pbp <- function(plays, team_id, opponent_id, loc) {
                                      gs_event_type == 'sub' ~ if_else(substitution.team.id == team_id, 'this', 'opp'),
                                      gs_event_type == 'vio' ~ if_else(violation.team.id == team_id, 'this', 'opp'),
                                      TRUE ~ NA_character_),
-              gs_event_type_detail = glue('{gs_event_type}_{if_else(gs_event_team == "this", "this", "opp")}'),
+              gs_event_type_detail = glue::glue('{gs_event_type}_{if_else(gs_event_team == "this", "this", "opp")}'),
               event_player = case_when(gs_event_type == 'fga' ~ fieldGoalAttempt.shootingPlayer.id,
                                        gs_event_type == 'fta'  ~ freeThrowAttempt.shootingPlayer.id,
                                        gs_event_type %in% c('oreb', 'dreb') ~ rebound.retrievingPlayer.id,
@@ -277,7 +280,7 @@ customize_msf_pbp <- function(plays, team_id, opponent_id, loc) {
               opp_segment_number = case_when(loc == 'HOME' ~ away_segment_number,
                                              loc == 'AWAY' ~ home_segment_number),
               tnd_data_source = 'msf',
-              unique_id = glue('{game_id}-{team_id}-{play_id}')
+              unique_id = glue::glue('{game_id}-{team_id}-{play_id}')
     )
 
   custom <- custom %>% add_score_data()
@@ -288,19 +291,50 @@ customize_msf_pbp <- function(plays, team_id, opponent_id, loc) {
 }
 
 
+#' Add score data to custom pbp data
+#'
+#' @param custom a data.frame of custom pbp data
+#'
+#' @return the same data.frame as the input with multiple added columns -
+#' \itemize {
+#'   \item `gs_this_points_row`: number of points for the reference team in
+#'   this row (0, 1, 2 or 3)
+#'   \item `gs_opp_points_row`: number of points for opponent team in this row
+#'   (0, 1, 2 or 3)
+#'   \item `gs_this_points_current_total`: current score for the reference team
+#'   when this row occured
+#'   \item `gs_opp_points_current_total`: current score for the opponent team
+#'   when this row occured
+#'   \item `gs_score_game_status`: indicates if the reference team is
+#'   'winning', 'losing' or 'tied'
+#'   \item `gs_score_differential`: reference team score minus opponent team
+#'   score
+#' }
+#' @importFrom dplyr mutate case_when
+#'
 add_score_data <- function(custom) {
-  new <- custom %>% mutate(gs_this_points_row = case_when(fga_result == 'make' & fga_team == 'this' ~ fga_points,
-                                                          fta_result == 'make' & fta_team == 'this' ~ 1L,
+  new <- custom %>% mutate(gs_this_points_row = case_when(fga_result == 'make' &
+                                                            fga_team == 'this' ~
+                                                            fga_points,
+                                                          fta_result == 'make' &
+                                                            fta_team == 'this' ~ 1L,
                                                           TRUE ~ 0L),
-                           gs_opp_points_row = case_when(fga_result == 'make' & fga_team == 'opp' ~ fga_points,
-                                                         fta_result == 'make' & fta_team == 'opp' ~ 1L,
+                           gs_opp_points_row = case_when(fga_result == 'make' &
+                                                           fga_team == 'opp' ~
+                                                           fga_points,
+                                                         fta_result == 'make' &
+                                                           fta_team == 'opp' ~ 1L,
                                                          TRUE ~ 0L),
                            gs_this_points_current_total = cumsum(gs_this_points_row),
                            gs_opp_points_current_total = cumsum(gs_opp_points_row),
-                           gs_score_game_status = case_when(gs_this_points_current_total > gs_opp_points_current_total ~ 'winning',
-                                                            gs_opp_points_current_total > gs_this_points_current_total ~ 'losing',
-                                                         TRUE ~ 'tied'),
-                           gs_score_differential = gs_this_points_current_total - gs_opp_points_current_total
+                           gs_score_game_status =
+                             case_when(gs_this_points_current_total >
+                                         gs_opp_points_current_total ~ 'winning',
+                                       gs_opp_points_current_total >
+                                         gs_this_points_current_total ~ 'losing',
+                                       TRUE ~ 'tied'),
+                           gs_score_differential = gs_this_points_current_total -
+                             gs_opp_points_current_total
                            )
 
   return(new)
@@ -313,7 +347,7 @@ add_score_data <- function(custom) {
 #'
 #' @param team team id, name, city or abbreviation
 #' @param subs data.frame of substitution information
-#'
+#' @importFrom dplyr filter pull bind_rows mutate select
 #' @return play-by-play data with players_on_the_floor columns attached
 #'
 
@@ -332,7 +366,7 @@ process_lineups <- function(team, subs, game_id) {
     players_on_the_floor[[i]] <- pof
   }
 
-  pof_df <- tibble(pof = players_on_the_floor,
+  pof_df <- tibble::tibble(pof = players_on_the_floor,
                    gs_total_elapsed_seconds = subs$gs_total_elapsed_seconds,
                    play_id = subs$play_id
   )
@@ -348,7 +382,7 @@ process_lineups <- function(team, subs, game_id) {
     select(play_id, segment_number) %>%
     # then join back to the original data and fill
     right_join(pof_df, by = 'play_id') %>%
-    fill(segment_number)  %>%
+    tidyr::fill(segment_number)  %>%
     # in addition to the pof vector, we want a character id that can be used for grouping
     mutate(pof_id = make_lineup_id(unlist(pof)))
 
@@ -358,7 +392,14 @@ process_lineups <- function(team, subs, game_id) {
 
 
 
-# helper function for inserting and removing players from a lineup vector
+#' a helper function for inserting and removing players from a lineup vector
+#' @param current the vector of player ids currently in the game
+#' @param player_in the id of the player coming into the game
+#' @param player_out the id of the player leaving the game
+#'
+#' @return a low to high sorted vector of the player ids on the court after the
+#' substitution is complete
+#'
 process_sub <- function(current, player_in, player_out) {
   if (is.na(player_out)) return(c(current, player_in))
   if (is.na(player_in)) return(c(current[current != player_out]))

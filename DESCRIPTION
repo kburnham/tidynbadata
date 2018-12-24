@@ -1,7 +1,7 @@
 Package: tidynbadata
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R:
     person(given = "First",
            family = "Last",
            role = c("aut", "cre"),
@@ -12,9 +12,10 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1
-Imports: 
+Imports:
     dplyr,
     tidyr,
     ggplot2,
     purrr,
     glue
+Suggests: testthat

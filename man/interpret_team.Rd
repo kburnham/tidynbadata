@@ -2,10 +2,16 @@
 % Please edit documentation in R/helpers.R
 \name{interpret_team}
 \alias{interpret_team}
-\title{Given a team input of unknown type (id, name, abbreviation) return all 3}
+\title{Given a team input of unknown type (id, name, city, abbreviation) return all 4}
 \usage{
 interpret_team(team_input)
 }
+\arguments{
+\item{team_input}{a team id, team name, team city or team abbreviation to be interpreted}
+}
+\value{
+a data.frame giving the id, abbr, name and city of the input team
+}
 \description{
-Given a team input of unknown type (id, name, abbreviation) return all 3
+Given a team input of unknown type (id, name, city, abbreviation) return all 4
 }

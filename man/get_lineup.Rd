@@ -4,14 +4,12 @@
 \alias{get_lineup}
 \title{Get a list of starters and bench players for a given game_id}
 \usage{
-get_lineup(game_id, team, use_archive = TRUE)
+get_lineup(game_id, team)
 }
 \arguments{
 \item{game_id}{the MSF game id for the desired game}
 
 \item{team}{strng to indicate team. Is passed to interpret team so can be any of name, city, id or abbreviation}
-
-\item{use_archive}{when TRUE (the default) makes a local archive of the requested lineup and checks the local archive before downloading new data}
 }
 \description{
 Get a list of starters and bench players for a given game_id

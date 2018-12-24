@@ -23,4 +23,4 @@ tidynbadata_team_info <- structure(list(team_id = c(91L, 82L, 84L, 93L, 89L, 86L
                                                  "PHX", "POR", "SAC", "SAS", "TOR", "UTA", "WAS")),
                                    class = "data.frame",
                                    row.names = c(NA, 30L), .Names = c("id", "city", "name", "abbr"))
-devtools::use_data(tidynbadata_team_info)
+devtools::use_data(tidynbadata_team_info, overwrite = TRUE)

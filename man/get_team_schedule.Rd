@@ -4,9 +4,8 @@
 \alias{get_team_schedule}
 \title{Download tibble of the schedule (with results for completed games) for a given NBA team (use the 3 letter id)}
 \usage{
-get_team_schedule(team = tidynbadata[["DEFAULT_TEAM"]],
-  season = tidynbadata[["CURRENT_SEASON"]],
-  version = tidynbadata[["MSF_VERSION"]])
+get_team_schedule(team, season = getOption("tidynbadata.current_season"),
+  version = getOption("tidynbadata.msf_version_id"))
 }
 \arguments{
 \item{team}{the 3 letter id for an NBA team, use 'ALL-TEAMS' for a data.frame with the schedule for all teams}

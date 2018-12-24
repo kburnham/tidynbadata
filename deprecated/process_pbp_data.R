@@ -340,3 +340,4 @@ add_segment_data <- function(pof, tes) {
 
 }
 
+custom2 %>% select(contains('score')) %>% tail

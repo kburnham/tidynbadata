@@ -7,21 +7,23 @@
 #' @return NULL
 #'
 check_archive_dir <- function() {
-  if (!dir.exists(tidynbadata$ARCHIVE_DIR)) stop(glue('The archive dir ({tidynbadata$ARCHIVE_DIR}) could not be found. You must create it
-                                                      with the command `dir.create(tidynbadata$ARCHIVE_DIR)` or set use_archive to FALSE.'))
+  archive_dir <- getOption('tidynbadata.archive_path')
+  if (!dir.exists(archive_dir)) stop(glue::glue('The archive dir ({archive_dir}) could not be found. You must create it
+                                                      with the command `dir.create(getOption("tidynbadata.archive_path"))` or set use_archive to FALSE.'))
   return(NULL)
 }
 
 
-#' Given a team input of unknown type (id, name, abbreviation) return all 3
-#' @param team_input a team id, team abbr, team name or team city to be interpreted
+#' Given a team input of unknown type (id, name, city, abbreviation) return all 4
+#' @param team_input a team id, team name, team city or team abbreviation to be interpreted
+#' @export
 #' @return a data.frame giving the id, abbr, name and city of the input team
-#'
+#' @importFrom dplyr filter
 #'
 interpret_team <- function(team_input) {
-  if (team_input %in% tidynbadata$TEAM_DATA$id) return(tidynbadata$TEAM_DATA %>% filter(id == team_input))
-  if (team_input %in% tidynbadata$TEAM_DATA$abbr) return(tidynbadata$TEAM_DATA %>% filter(abbr == team_input))
-  if (team_input %in% tidynbadata$TEAM_DATA$name) return(tidynbadata$TEAM_DATA %>% filter(name == team_input))
-  if (team_input %in% tidynbadata$TEAM_DATA$city) return(tidynbadata$TEAM_DATA %>% filter(city == team_input))
-  stop(glue('The provided value - {team_input} - could not be found in the team data as an id, abbreviation, name or city.'))
+  if (team_input %in% tidynbadata_team_info$id) return(tidynbadata_team_info %>% filter(id == team_input))
+  if (team_input %in% tidynbadata_team_info$abbr) return(tidynbadata_team_info %>% filter(abbr == team_input))
+  if (team_input %in% tidynbadata_team_info$name) return(tidynbadata_team_info %>% filter(name == team_input))
+  if (team_input %in% tidynbadata_team_info$city) return(tidynbadata_team_info %>% filter(city == team_input))
+  stop(glue::glue('The provided value - {team_input} - could not be found in the team data as an id, abbreviation, name or city.'))
 }
