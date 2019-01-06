@@ -1,7 +1,7 @@
 
 #' Download tibble of the schedule (with results for completed games) for a given NBA team (use the 3 letter id)
 #'
-#' @param team the 3 letter id for an NBA team, use 'ALL-TEAMS' for a data.frame with the schedule for all teams
+#' @param team the 3 letter id for an NBA team
 #' @param season the season you want the schedule for
 #' @param version the msf api version
 #' @param ... additional paramaters passed to `msf_get_results()`
@@ -31,19 +31,26 @@ get_team_schedule <- function(team,
            opponent = if_else(schedule.homeTeam.abbreviation == team,
                              schedule.awayTeam.abbreviation,
                              schedule.homeTeam.abbreviation),
-           location = if_else(schedule.homeTeam.abbreviation == team, 'home', 'away'),
-           date = as.Date(schedule.startTime),
-           time = schedule.startTime %>% ymd_hms() %>% strftime(format = "%H:%M CT"),
-           status = if_else(schedule.playedStatus == 'COMPLETED', 'complete', NA_character_),
+           location = if_else(schedule.homeTeam.abbreviation == team,
+                              'home',
+                              'away'),
+           start_time_UTC = schedule.startTime %>% lubridate::ymd_hms(),
+           date = start_time_UTC %>% - hours(5)  %>% as.Date(),
+           status = if_else(schedule.playedStatus == 'COMPLETED',
+                            'complete',
+                            NA_character_),
            result = case_when(is.na(status) ~ NA_character_,
-                              location == 'home' & score.homeScoreTotal > score.awayScoreTotal ~ 'win',
-                              location == 'away' & score.awayScoreTotal > score.homeScoreTotal ~ 'win',
+                              location == 'home' &
+                                score.homeScoreTotal > score.awayScoreTotal ~ 'win',
+                              location == 'away' &
+                                score.awayScoreTotal > score.homeScoreTotal ~ 'win',
                               TRUE ~ 'loss'),
            wins  = cumsum(result == 'win'),
            losses = cumsum(result == 'loss'),
            venue = schedule.venue.name
     ) %>%
-    select(msf_game_id, team, opponent, date, time, location, status, result, wins, losses, venue)
+    select(msf_game_id, team, opponent, date, start_time_UTC,
+           location, status, result, wins, losses, venue)
   return(team_games)
 
 }
