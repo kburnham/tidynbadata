@@ -2,12 +2,14 @@
 % Please edit documentation in R/process_msf_pbp.R
 \name{get_msf_raw_columns}
 \alias{get_msf_raw_columns}
-\title{Extract the raw columns needed from a provided mysportsfeeds nba play-by-play,
-rename to tidynbadata names and drop the columns we don't need}
+\title{Extract the raw columns needed from a provided mysportsfeeds nba play-by-play
+and drop the columns we don't need}
 \usage{
 get_msf_raw_columns(raw_msf_pbp)
 }
 \description{
-Extract the raw columns needed from a provided mysportsfeeds nba play-by-play,
-rename to tidynbadata names and drop the columns we don't need
+This function is used by \code{process_msf_pbp()}
+}
+\details{
+@param raw_msf_pbp the list returned by \code{get_raw_pbp(game_id)}
 }

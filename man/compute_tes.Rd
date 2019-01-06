@@ -6,6 +6,15 @@
 \usage{
 compute_tes(x, y)
 }
+\arguments{
+\item{x}{the quarter number (5+ for overtime periods)}
+
+\item{y}{seconds elapsed since the beginning of the quarter}
+}
+\value{
+an integer indicating the total number of gametime seconds since the
+start of the game
+}
 \description{
 compute the total time elapsed in the game given the quarter and time elapsed
 }

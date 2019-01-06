@@ -4,7 +4,7 @@ library(glue)
 library(lubridate)
 library(tidynbadata)
 authenticate_v2_x(apikey = 'abd52306-deb4-4204-8605-e877fc')
-
+debugonce(get_team_schedule)
 sched <- get_team_schedule(team = 'Knicks')
 
 kgs <- sched %>% filter(status == 'complete') %>% pull(msf_game_id)

@@ -20,8 +20,10 @@ this row (0, 1, 2 or 3)
 when this row occured
 \item \code{gs_opp_points_current_total}: current score for the opponent team
 when this row occured
-\item \code{gs_score_game_status}: indicates if the reference team is 'winning', 'losing' or 'tied'
-\item \code{gs_score_differential}: reference team score minus opponent team score
+\item \code{gs_score_game_status}: indicates if the reference team is
+'winning', 'losing' or 'tied'
+\item \code{gs_score_differential}: reference team score minus opponent team
+score
 }
 }
 \description{

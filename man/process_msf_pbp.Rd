@@ -6,13 +6,12 @@
 \usage{
 process_msf_pbp(raw_msf_pbp)
 }
-\arguments{
-\item{game_id}{}
-}
 \value{
 a length 2 list of pbp tibbles, one for each team involved.
 This list is also archived.
 }
 \description{
-High level function for converting raw msf pbp to a tidynbadata pbp tibble
+Typically it is not necessary to call this function directly. It is better to
+use \code{load_pbp(game_id, team)} which will handle acquisition of the
+raw data and archiving of the results.
 }

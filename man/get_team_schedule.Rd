@@ -8,7 +8,7 @@ get_team_schedule(team, season = getOption("tidynbadata.current_season"),
   version = getOption("tidynbadata.msf_version_id"))
 }
 \arguments{
-\item{team}{the 3 letter id for an NBA team, use 'ALL-TEAMS' for a data.frame with the schedule for all teams}
+\item{team}{the 3 letter id for an NBA team}
 
 \item{season}{the season you want the schedule for}
 
