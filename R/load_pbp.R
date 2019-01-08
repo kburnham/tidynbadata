@@ -2,7 +2,8 @@
 #' process one and return it.
 #'
 #' @param game_id unique id for game
-#' @param team_id if NA returns a list with both pbp
+#' @param team any of team name, city, id or abbreviation. If NA returns a
+#' list with a pbp for each team
 #' @export
 #' @return when team is NA a list with both team's pbp data is returned, when a
 #' team_id is provided a data.frame of that team's pbp data is returned

@@ -11,6 +11,8 @@ process_lineups(team, subs, game_id)
 \item{team}{team id, name, city or abbreviation}
 
 \item{subs}{data.frame of substitution information}
+
+\item{game_id}{the msf game_id for the requested game}
 }
 \value{
 play-by-play data with players_on_the_floor columns attached

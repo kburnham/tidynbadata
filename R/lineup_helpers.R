@@ -1,7 +1,13 @@
 
 #' a function for searching lineups that do or do not include certain players
+#'
+#' This function returns TRUE for any lineup that includes all of includes and none of excludes.
+#'
+#' @param lineup a length five vector indicating players on the floor
+#' @param includes a vector of ids to check for inclusion in lineup
+#' @param excludes a vector of ids to check for exclusion fromt he lineup
 
-filter_lineup <- function(lineup, inlcudes, excludes)
+filter_lineup <- function(lineup, includes, excludes)
   if (all(includes %in% lineup) & !any(excludes %in% lineup)) return(TRUE) else return(FALSE)
 
 #' convert a vector of player ids into a single dash separated string, sorted

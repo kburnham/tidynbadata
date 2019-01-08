@@ -1,10 +1,11 @@
+
 #' High level function for converting raw msf pbp to a tidynbadata pbp tibble
 #'
 #' Typically it is not necessary to call this function directly. It is better to
 #' use \code{load_pbp(game_id, team)} which will handle acquisition of the
 #' raw data and archiving of the results.
-#'
-#' @param game_id
+#' @param raw_msf_pbp a raw api pull of a play-by-play from mysportsfeeds
+#' (as returned by \code{get_raw_pbp(game_id)})
 #' @importFrom dplyr left_join mutate lead
 #' @importFrom tidyr fill
 #'
@@ -72,19 +73,17 @@ process_msf_pbp <- function(raw_msf_pbp) {
 
 }
 
-
 #' Extract the raw columns needed from a provided mysportsfeeds nba play-by-play
-#'  and drop the columns we don't need
+#'and drop the columns we don't need
 #'
 #'  This function is used by \code{process_msf_pbp()}
 #'
 #'  @param raw_msf_pbp the list returned by \code{get_raw_pbp(game_id)}
-#' @importFrom dplyr setdiff select
+#'  @importFrom dplyr setdiff select
 #'  @return the play by by data from the raw_msf_pbp with unnecessary columns
 #'  removed
 get_msf_raw_columns <- function(raw_msf_pbp) {
   # violation columns may not exist, need to create with all NAs
-  #
   plays <- raw_msf_pbp$api_json$plays
 
   # only retain the columns that we need
@@ -139,6 +138,7 @@ get_msf_raw_columns <- function(raw_msf_pbp) {
 #' @return an integer indicating the total number of gametime seconds since the
 #' start of the game
 #' @importFrom dplyr if_else
+#'
 compute_tes <- function(x, y) {
   # this handles infinite overtime periods
   tes <- if_else(x < 6,
@@ -295,23 +295,8 @@ customize_msf_pbp <- function(plays, team_id, opponent_id, loc) {
 #'
 #' @param custom a data.frame of custom pbp data
 #'
-#' @return the same data.frame as the input with multiple added columns -
-#' \itemize {
-#'   \item `gs_this_points_row`: number of points for the reference team in
-#'   this row (0, 1, 2 or 3)
-#'   \item `gs_opp_points_row`: number of points for opponent team in this row
-#'   (0, 1, 2 or 3)
-#'   \item `gs_this_points_current_total`: current score for the reference team
-#'   when this row occured
-#'   \item `gs_opp_points_current_total`: current score for the opponent team
-#'   when this row occured
-#'   \item `gs_score_game_status`: indicates if the reference team is
-#'   'winning', 'losing' or 'tied'
-#'   \item `gs_score_differential`: reference team score minus opponent team
-#'   score
-#' }
+#' @return the same data.frame as the input with multiple added columns
 #' @importFrom dplyr mutate case_when
-#'
 add_score_data <- function(custom) {
   new <- custom %>% mutate(gs_this_points_row = case_when(fga_result == 'make' &
                                                             fga_team == 'this' ~
@@ -347,6 +332,7 @@ add_score_data <- function(custom) {
 #'
 #' @param team team id, name, city or abbreviation
 #' @param subs data.frame of substitution information
+#' @param game_id the msf game_id for the requested game
 #' @importFrom dplyr filter pull bind_rows mutate select
 #' @return play-by-play data with players_on_the_floor columns attached
 #'

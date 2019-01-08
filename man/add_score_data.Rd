@@ -10,21 +10,7 @@ add_score_data(custom)
 \item{custom}{a data.frame of custom pbp data}
 }
 \value{
-the same data.frame as the input with multiple added columns -
-\itemize {
-\item \code{gs_this_points_row}: number of points for the reference team in
-this row (0, 1, 2 or 3)
-\item \code{gs_opp_points_row}: number of points for opponent team in this row
-(0, 1, 2 or 3)
-\item \code{gs_this_points_current_total}: current score for the reference team
-when this row occured
-\item \code{gs_opp_points_current_total}: current score for the opponent team
-when this row occured
-\item \code{gs_score_game_status}: indicates if the reference team is
-'winning', 'losing' or 'tied'
-\item \code{gs_score_differential}: reference team score minus opponent team
-score
-}
+the same data.frame as the input with multiple added columns
 }
 \description{
 Add score data to custom pbp data

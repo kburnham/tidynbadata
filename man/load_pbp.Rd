@@ -10,7 +10,8 @@ load_pbp(game_id, team = NA)
 \arguments{
 \item{game_id}{unique id for game}
 
-\item{team_id}{if NA returns a list with both pbp}
+\item{team}{any of team name, city, id or abbreviation. If NA returns a
+list with a pbp for each team}
 }
 \value{
 when team is NA a list with both team's pbp data is returned, when a

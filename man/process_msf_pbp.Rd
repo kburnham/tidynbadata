@@ -6,6 +6,10 @@
 \usage{
 process_msf_pbp(raw_msf_pbp)
 }
+\arguments{
+\item{raw_msf_pbp}{a raw api pull of a play-by-play from mysportsfeeds
+(as returned by \code{get_raw_pbp(game_id)})}
+}
 \value{
 a length 2 list of pbp tibbles, one for each team involved.
 This list is also archived.

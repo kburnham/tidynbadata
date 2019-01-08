@@ -4,8 +4,15 @@
 \alias{filter_lineup}
 \title{a function for searching lineups that do or do not include certain players}
 \usage{
-filter_lineup(lineup, inlcudes, excludes)
+filter_lineup(lineup, includes, excludes)
+}
+\arguments{
+\item{lineup}{a length five vector indicating players on the floor}
+
+\item{includes}{a vector of ids to check for inclusion in lineup}
+
+\item{excludes}{a vector of ids to check for exclusion fromt he lineup}
 }
 \description{
-a function for searching lineups that do or do not include certain players
+This function returns TRUE for any lineup that includes all of includes and none of excludes.
 }
