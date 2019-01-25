@@ -96,20 +96,20 @@ get_lineup <- function(game_id, team) {
 #' Get a raw copy of a game's play-by-play data from the local archive when possible
 #'
 #' @param game_id the msf game id for the game
-#'
-#' @return a raw play-by-play object from mysportsfeeds, this is also archived
+#' @export
+#' @return a raw play-by-play object from mysportsfeeds, which is also archived
 
 get_raw_pbp <- function(game_id) {
   check_archive_dir()
   pbp_archive <- file.path(getOption('tidynbadata.archive_path'), 'pbp_archive')
   if (!dir.exists(pbp_archive)) dir.create(pbp_archive)
-  pbp_file_path <- file.path(pbp_archive, glue('{game_id}.rds'))
+  pbp_file_path <- file.path(pbp_archive, glue::glue('{game_id}.rds'))
   if (file.exists(pbp_file_path)) {
     message(glue::glue('Archived play-by-play for game {game_id} found and is being returned.
                  To force a new API call delete the file at {pbp_file_path}'))
     return(readRDS(pbp_file_path))
   } else {
-    message(glue('No archives play_by_play for game {game_id} found, making a new API call . . .'))
+    message(glue::glue('No archived play_by_play for game {game_id} found, making a new API call . . .'))
   }
 
 
@@ -154,5 +154,33 @@ get_player_data <- function(force_reload = FALSE) {
 }
 
 
+#' Retrieve a raw box score pull from mysportsfeeds based on a game_id
+#'
+#' @param game_id
+#'
+#' @return a raw boxscore object from mysportsfeeds, which is also archived
 
+get_raw_msf_box_score <- function(game_id) {
+  check_archive_dir()
+  msf_boxscore_archive <- file.path(getOption('tidynbadata.archive_path'), 'msf_boxscore_archive')
+  if (!dir.exists(msf_boxscore_archive)) dir.create(msf_boxscore_archive)
+  msf_bs_file_path <- file.path(msf_boxscore_archive, glue::glue('{game_id}.rds'))
+  if (file.exists(msf_bs_file_path)) {
+    message(glue::glue('Archived msf boxscore for game {game_id} found and is being returned.
+                 To force a new API call delete the file at {msf_bs_file_path}'))
+    return(readRDS(msf_bs_file_path))
+  } else {
+    message(glue::glue('No archived msf boxscore for game {game_id} found, making a new API call . . .'))
+  }
+
+  raw <- msf_get_results(league = 'nba',
+                         version = getOption('tidynbadata.msf_version_id'),
+                         feed = 'game_boxscore',
+                         season = getOption('tidynbadata.current_season'),
+                         params = list(game = game_id))
+
+  saveRDS(raw, msf_bs_file_path)
+  return(raw)
+
+}
 

@@ -2,7 +2,7 @@
 #'
 #'
 #'
-#'
+#' @export
 #'
 #' @return NULL
 #'

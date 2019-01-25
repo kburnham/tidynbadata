@@ -10,7 +10,7 @@ get_raw_pbp(game_id)
 \item{game_id}{the msf game id for the game}
 }
 \value{
-a raw play-by-play object from mysportsfeeds, this is also archived
+a raw play-by-play object from mysportsfeeds, which is also archived
 }
 \description{
 Get a raw copy of a game's play-by-play data from the local archive when possible

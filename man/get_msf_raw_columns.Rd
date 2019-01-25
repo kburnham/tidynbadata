@@ -12,7 +12,6 @@ This function is used by \code{process_msf_pbp()}
 }
 \details{
 @param raw_msf_pbp the list returned by \code{get_raw_pbp(game_id)}
-
 @importFrom dplyr setdiff select
 @return the play by by data from the raw_msf_pbp with unnecessary columns
 removed
