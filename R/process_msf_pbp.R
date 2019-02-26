@@ -65,8 +65,8 @@ process_msf_pbp <- function(raw_msf_pbp) {
   away_pbp <- customize_msf_pbp(final, team_id = away_team, opponent_id = home_team, loc = 'away')
 
   final <- structure(list(home_pbp, away_pbp),
-                     .Names = c(as.name(home_team),
-                                as.name(away_team)))
+                     .Names = c(as.character(home_team),
+                                as.character(away_team)))
 
   return(final)
 
@@ -115,6 +115,28 @@ get_msf_raw_columns <- function(raw_msf_pbp) {
 
   missing_vio_cols <- setdiff(vio_cols, names(plays))
   for (mvc in missing_vio_cols) plays[[mvc]] <- NA
+
+  ## test for existence of location data, where missing data is necessary, use -1n
+  if (!"foul.location.x" %in% names(plays)) {
+    plays$foul.location.x <- NA
+    plays$foul.location.x[!is.na(plays$foul.type)] <- -1
+  }
+
+  if (!"foul.location.y" %in% names(plays)) {
+    plays$foul.location.y <- NA
+    plays$foul.location.y[!is.na(plays$foul.type)] <- -1
+  }
+
+  if (!"fieldGoalAttempt.location.x" %in% names(plays)) {
+    plays$fieldGoalAttempt.location.x <- NA
+    plays$fieldGoalAttempt.location.x[!is.na(plays$fieldGoalAttempt.result)] <- -1
+  }
+
+  if (!"fieldGoalAttempt.location.y" %in% names(plays)) {
+    plays$fieldGoalAttempt.location.y <- NA
+    plays$fieldGoalAttempt.location.y[!is.na(plays$fieldGoalAttempt.result)] <- -1
+  }
+
 
   needed_cols <- c(ps_cols, jb_cols, fga_cols,
                    reb_cols, foul_cols, vio_cols,
@@ -270,7 +292,7 @@ customize_msf_pbp <- function(plays, team_id, opponent_id, loc) {
               vio_team = case_when(is.na(violation.team.id) ~ NA_character_,
                                    violation.team.id == team_id ~ 'this',
                                    violation.team.id == opponent_id ~ 'opp'),
-              sub_team = case_when(is.na(violation.team.id) ~ NA_character_,
+              sub_team = case_when(is.na(substitution.team.id) ~ NA_character_,
                                    substitution.team.id == team_id ~ 'this',
                                    substitution.team.id == opponent_id ~ 'opp'),
               sub_player_in = substitution.incomingPlayer.id,

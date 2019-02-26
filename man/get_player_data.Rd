@@ -4,7 +4,7 @@
 \alias{get_player_data}
 \title{downloads a data.frame of NBA player data from mysportsfeeds}
 \usage{
-get_player_data(force_reload = FALSE)
+get_player_data()
 }
 \arguments{
 \item{force_reload}{when TRUE will ignore the archive and download new data}

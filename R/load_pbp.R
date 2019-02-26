@@ -29,8 +29,62 @@ load_pbp <- function(game_id, team = NA) {
       return(proc_pbp)
     } else {
       team_id <- interpret_team(team)$id
-      pbp_team <- proc_pbp[[glue('`{team_id}`')]]
+      pbp_team <- proc_pbp[[as.character(team_id)]]
       message(glue::glue('Returning pbp data for game {game_id} and team {team_id}'))
       return(pbp_team)
     }
   }
+
+
+#' This function checks the archive to see which pbps have been processed
+#' and the schedule to see which games have been played and then downloads,
+#' processes and archives the play-by-play data, returning nothing.
+#' @return NULL
+#'
+#' @export
+#'
+update_pbp_summaries <- function() {
+  # get the list of game_ids we have processed already
+  check_archive_dir()
+  proc_pbp_path <- file.path(getOption("tidynbadata.archive_path"), "processed_pbp_data")
+  already_have <- list.files(proc_pbp_path) %>% str_replace(".rds", "")
+
+  # get the list of completed games
+  all_games <- mysportsfeedsR::msf_get_results(league = 'nba',
+                                               season = getOption('tidynbadata.current_season'),
+                                               feed = 'seasonal_games',
+                                               version = '2.0')
+  need_to_get <- get_all_completed_game_ids() %>%
+    setdiff(already_have)
+
+  walk(need_to_get, load_pbp)
+
+  message('All pbps are now up to date.')
+
+  return(NULL)
+
+}
+
+
+#' Load a vector of all completed game_ids
+#'
+#' @export
+#' @return a vector of all completed game_ids
+
+get_all_completed_game_ids <- function() {
+
+  all_games <- mysportsfeedsR::msf_get_results(league = 'nba',
+                                               season = getOption('tidynbadata.current_season'),
+                                               feed = 'seasonal_games',
+                                               version = '2.0')
+
+  completed_games <- all_games$api_json$games %>%
+    filter(schedule.playedStatus == "COMPLETED") %>%
+    pull(schedule.id) %>%
+    as.character()
+
+  return(completed_games)
+
+
+
+}

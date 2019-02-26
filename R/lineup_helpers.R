@@ -51,4 +51,3 @@ get_lineup_initials <- function(lineup, pd) {
 
 
 
-

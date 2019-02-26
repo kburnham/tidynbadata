@@ -129,13 +129,14 @@ get_raw_pbp <- function(game_id) {
 #'
 #' @return a data.frame of player data
 
-get_player_data <- function(force_reload = FALSE) {
+get_player_data <- function() {
   check_archive_dir()
   player_data_archive <- file.path(getOption('tidynbadata.archive_path'), 'player_data_archive')
   if (!dir.exists(player_data_archive)) dir.create(player_data_archive)
   pd_file_path <- file.path(player_data_archive, 'player_data.rds')
-  if (file.exists(pd_file_path) & !force_reload) {
-    message(glue::glue('Archived player data found and is being returned.'))
+  if (file.exists(pd_file_path)) {
+    message(glue::glue('Archived player data found and is being returned. To force a new download delete the
+                       fle at {pd_file_path}'))
     return(readRDS(pd_file_path))
   } else {
     message(glue::glue('No archived player data
@@ -146,10 +147,11 @@ get_player_data <- function(force_reload = FALSE) {
                                    league = 'nba',
                                    feed = 'players',
                                    season = getOption('tidynbadata.current_season'))
+    saveRDS(player_data, pd_file_path)
   }
 
-  saveRDS(player_data$api_json$players, pd_file_path)
-  return(player_data$api_json$players)
+
+  return(player_data)
 
 }
 
