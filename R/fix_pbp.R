@@ -240,7 +240,167 @@ fix_pbp <- function(raw_msf_pbp) {
       }
 
 
+    } else if (game_id == 47779) {
+      if (plays$description[126] == "DeAndre Jordan added for start of quarter") {
+        message("DeAndre Jordan incorrectly added as a 2nd quarter starter")
+        plays <- plays %>% slice(-126)
+      }
+    } else if (game_id == 47785) {
+      if (plays$description == "Kyrie Irving added for start of quarter") {
+        plays <- plays %>% slice(-406)
+      }
+    } else if (game_id == 47809) {
+      if (plays$description == "Zaza Pachulia added for start of quarter") {
+        message("Zaza Pachulia incorrectly added as a 3rd quarter starter")
+        plays <- plays %>% slice(-254)
+      }
+    } else if (game_id == 47812) {
+      if (str_detect(plays$description[2], 'added for start of quarter')) {
+        message('a player that was already a starter was inserted into the game in row 2')
+        plays <- plays %>% slice(-2)
+      }
+    } else if (game_id == 47827) {
+      if (plays$description[137] == "PJ Tucker added for start of quarter") {
+        message("PJ Tucker incorrectly added for the start of the 2nd quarter")
+        plays <- plays %>% slice(-137)
+      }
+    } else if (game_id == 47834) {
+      if (str_detect(plays$description[2], 'added for start of quarter')) {
+        message('a player that was already a starter was inserted into the game in row 2')
+        plays <- plays %>% slice(-2)
+      }
+    } else if (game_id == 47838) {
+      if (plays$description[418] == "Cheick Diallo added for start of quarter") {
+        message("Cheick Diallo incorrectly added as 4th quarter starter")
+        plays <- plays %>% slice(-418)
+      }
+    } else if (game_id == 47845) {
+      if (nrow(plays %>% filter(playStatus.quarter == 3 &
+                         playStatus.secondsElapsed == 0 &
+                         str_detect(description, 'Juancho Hernangomez added'))) == 0) {
+        message('Juancho Hernangomez was not added as a 3rd period starter')
+        new_row <- tibble(description = "Juancho Hernangomez added for start of quarter",
+                          substitution.incomingPlayer.id = 10135L,
+                          total_elapsed_seconds = 1440L,
+                          substitution.team.abbreviation = 'DEN',
+                          substitution.team.id = 99L,
+                          substitution.incomingPlayer.lastName = 'Hernangomez',
+                          substitution.incomingPlayer.firstName = 'Juancho',
+                          substitution.incomingPlayer.position = 'SF',
+                          substitution.incomingPlayer.jerseyNumber = 41L,
+                          playStatus.quarter = 3L,
+                          playStatus.secondsElapsed = 0L
+        )
+
+        plays <- bind_rows(plays %>% slice(1:247),
+                           new_row,
+                           plays %>% slice((248):nrow(plays))
+                           )
+
+        ##also need to remove him at the start of 4th quarter
+        new_row <- tibble(description = "Juancho Hernangomez removed for start of quarter",
+                          substitution.outgoingPlayer.id = 10135L,
+                          total_elapsed_seconds = 2160L,
+                          substitution.team.abbreviation = 'DEN',
+                          substitution.team.id = 99L,
+                          substitution.outgoingPlayer.lastName = 'Hernangomez',
+                          substitution.outgoingPlayer.firstName = 'Juancho',
+                          substitution.outgoingPlayer.position = 'SF',
+                          substitution.outgoingPlayer.jerseyNumber = 41L,
+                          playStatus.quarter = 4L,
+                          playStatus.secondsElapsed = 0L
+        )
+
+        plays <- bind_rows(plays %>% slice(1:352),
+                           new_row,
+                           plays %>% slice((353):nrow(plays))
+        )
+      }
+    } else if (game_id == 47824) {
+      if (plays$description[137] == "Marcus Morris removed for start of quarter") {
+        message("Marcus Morris is removed twice at the start of quarter 2")
+        plays <- plays %>% slice(-137)
+
+      }
+
+      if (plays$description[285] == "Marcus Morris removed for start of quarter") {
+        message("Marcus Morris is removed twice at the start of quarter 3")
+        plays <- plays %>% slice(-285)
+      }
+
+
+      if (plays$description[390] == "Marc added for start of quarter") {
+        message("Marcus Morris incorrectly added as 4th quarter starter")
+        plays <- plays %>% slice(-390)
+      }
+     } else if (game_id == 47812) {
+      if (str_detect(plays$description[2], 'added for start of quarter')) {
+        message('a player that was already a starter was inserted into the game in row 2')
+        plays <- plays %>% slice(-2)
+      }
+    } else if (game_id == 47894) {
+      if (plays$description[275] == "Vince Carter added for start of quarter") {
+        message("Vince Carter did not play in game 47894, but was added and removed from the game")
+        plays <- plays %>% slice(c(-275, -393))
+      }
+    } else if (game_id == 47898) {
+      if (plays$description[382] == "Paul Millsap added for start of quarter") {
+        message("Paul Milsap incorrectly added as 4th quarter starter")
+        plays <- plays %>% slice(-382)
+      }
+    } else if (game_id == 47913) {
+      if (plays$description[386] == "Stephen Curry added for start of quarter") {
+        message("Steph Curry incorrectly added as 4th quarter starter")
+        plays <- plays %>% slice(-386)
+      }
+    } else if (game_id == 47917) {
+      if (plays$description[131] == "Karl-Anthony Towns added for start of quarter") {
+        message("Karl-Anthony Towns incorrectly added as 2nd quarter starter")
+        plays <- plays %>% slice(-131)
+      }
+
+    } else if (game_id == 47938) {
+      if (str_detect(plays$description[2], 'added for start of quarter')) {
+        message('a player that was already a starter was inserted into the game in row 2')
+        plays <- plays %>% slice(-2)
+      }
+
+    } else if (game_id == 47940) {
+      if (plays$description[404] == "Jarrett Allen added for start of quarter") {
+        message("Jarrett Allen incorrectly added as 4th quarter starter")
+        plays <- plays %>% slice(-404)
+      }
+
+      if (nrow(plays %>% filter(playStatus.quarter == 5 &
+                                playStatus.secondsElapsed == 0 &
+                                str_detect(description, 'Joe Harris added'))) == 0) {
+        new_row <- tibble(description = "Joe Harris Added for start of quarter",
+                          substitution.incomingPlayer.id = 9540L,
+                          total_elapsed_seconds = 2880L,
+                          substitution.team.abbreviation = 'BRO',
+                          substitution.team.id = 84L,
+                          substitution.incomingPlayer.lastName = 'Harris',
+                          substitution.incomingPlayer.firstName = 'Joe',
+                          substitution.incomingPlayer.position = 'SF',
+                          substitution.incomingPlayer.jerseyNumber = 12L,
+                          playStatus.quarter = 5L,
+                          playStatus.secondsElapsed = 0L
+        )
+
+        plays <- bind_rows(plays %>% slice(1:531),
+                           new_row,
+                           plays %>% slice((532):nrow(plays))
+        )
+
+        if (plays$description[403] == "Jonas Valanciunas added for start of quarter") {
+          message("Jonas Valanciunas incorrectly added as 4th quarter starter")
+          plays <- plays %>% slice(-403)
+        }
+
+
+      }
     }
+
 
 
 

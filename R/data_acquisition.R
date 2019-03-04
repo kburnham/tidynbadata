@@ -72,24 +72,27 @@ get_lineup <- function(game_id, team) {
     message(glue::glue('Archived line up for game: {game_id} team: {team_id}
                        found and is being returned. To force a new API call,
                        `set use_archive = FALSE`'))
-    return(readRDS(lu_file_path))
+   lu <- readRDS(lu_file_path)
   } else {
     message(glue::glue('No archive for game: {game_id} team: {team_id}
                        found, making a new API call . . .'))
-  }
-
-
-  raw <- mysportsfeedsR::msf_get_results(league = 'nba',
-                           version = getOption('tidynbadata.msf_version_id'),
-                           feed = 'game_lineup',
-                           season = getOption('tidynbadata.current_season'),
-                           params = list(game = game_id))
+    raw <- mysportsfeedsR::msf_get_results(league = 'nba',
+                                           version = getOption('tidynbadata.msf_version_id'),
+                                           feed = 'game_lineup',
+                                           season = getOption('tidynbadata.current_season'),
+                                           params = list(game = game_id))
 
 
     lu <- raw$api_json$teamLineups$actual.lineupPositions[[which(raw$api_json$teamLineups$team.id == team_id)]] %>%
       dplyr::mutate(position = stringr::str_replace(position, '[0-9]', '')) %>% dplyr::arrange(dplyr::desc(position))
     saveRDS(lu, lu_file_path)
-    return(lu)
+  }
+
+  lu <- fix_lineup(lu, game_id, team_id)
+
+
+
+  return(lu)
 
 }
 
