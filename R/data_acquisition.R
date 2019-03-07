@@ -8,7 +8,7 @@
 #' @export
 #' @importFrom dplyr mutate select if_else
 #' @family data_acquisition
-#' @return a tibble
+#' @return a tibble showing game data for the given team
 
 get_team_schedule <- function(team,
                               season = getOption('tidynbadata.current_season'),
@@ -61,6 +61,8 @@ get_team_schedule <- function(team,
 #' @param game_id the MSF game id for the desired game
 #' @param team strng to indicate team. Is passed to interpret team so can be any of name, city, id or abbreviation
 #' @export
+#' @family data_acquisition
+#' @return tibble of lineup data for given game and team
 #'
 get_lineup <- function(game_id, team) {
   team_id <- interpret_team(team)$id
@@ -100,6 +102,7 @@ get_lineup <- function(game_id, team) {
 #'
 #' @param game_id the msf game id for the game
 #' @export
+#' @family data_acquisition
 #' @return a raw play-by-play object from mysportsfeeds, which is also archived
 
 get_raw_pbp <- function(game_id) {
@@ -129,7 +132,8 @@ get_raw_pbp <- function(game_id) {
 #' downloads a data.frame of NBA player data from mysportsfeeds
 #'
 #' @param force_reload when TRUE will ignore the archive and download new data
-#'
+#' @export
+#' @family data_acquisition
 #' @return a data.frame of player data
 
 get_player_data <- function() {
@@ -161,8 +165,9 @@ get_player_data <- function() {
 
 #' Retrieve a raw box score pull from mysportsfeeds based on a game_id
 #'
-#' @param game_id
-#'
+#' @param game_id id of requested game
+#' @export
+#' @family data_acquisition
 #' @return a raw boxscore object from mysportsfeeds, which is also archived
 
 get_raw_msf_box_score <- function(game_id) {

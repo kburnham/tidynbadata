@@ -4,7 +4,7 @@
 \alias{fix_lineup}
 \title{This funtion is used to fix erroneous lineups on load}
 \usage{
-fix_lineup(lineup, game_id, team_id)
+fix_lineup(lu, game_id, team_id)
 }
 \description{
 This funtion is used to fix erroneous lineups on load

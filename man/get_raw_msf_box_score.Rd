@@ -7,7 +7,7 @@
 get_raw_msf_box_score(game_id)
 }
 \arguments{
-\item{game_id}{}
+\item{game_id}{id of requested game}
 }
 \value{
 a raw boxscore object from mysportsfeeds, which is also archived
@@ -15,3 +15,9 @@ a raw boxscore object from mysportsfeeds, which is also archived
 \description{
 Retrieve a raw box score pull from mysportsfeeds based on a game_id
 }
+\seealso{
+Other data_acquisition: \code{\link{get_lineup}},
+  \code{\link{get_player_data}}, \code{\link{get_raw_pbp}},
+  \code{\link{get_team_schedule}}
+}
+\concept{data_acquisition}

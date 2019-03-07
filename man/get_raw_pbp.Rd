@@ -15,3 +15,10 @@ a raw play-by-play object from mysportsfeeds, which is also archived
 \description{
 Get a raw copy of a game's play-by-play data from the local archive when possible
 }
+\seealso{
+Other data_acquisition: \code{\link{get_lineup}},
+  \code{\link{get_player_data}},
+  \code{\link{get_raw_msf_box_score}},
+  \code{\link{get_team_schedule}}
+}
+\concept{data_acquisition}

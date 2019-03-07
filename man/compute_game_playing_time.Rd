@@ -22,3 +22,4 @@ players-on-the-floor issues caused by missing or extra substitutions
 \seealso{
 Other pbp_audit: \code{\link{audit_pof_vec}}
 }
+\concept{pbp_audit}

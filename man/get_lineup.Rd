@@ -11,6 +11,16 @@ get_lineup(game_id, team)
 
 \item{team}{strng to indicate team. Is passed to interpret team so can be any of name, city, id or abbreviation}
 }
+\value{
+tibble of lineup data for given game and team
+}
 \description{
 Get a list of starters and bench players for a given game_id
 }
+\seealso{
+Other data_acquisition: \code{\link{get_player_data}},
+  \code{\link{get_raw_msf_box_score}},
+  \code{\link{get_raw_pbp}},
+  \code{\link{get_team_schedule}}
+}
+\concept{data_acquisition}

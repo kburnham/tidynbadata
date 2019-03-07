@@ -24,3 +24,4 @@ Other summarize_pbp_data: \code{\link{compute_eight_factors}},
   \code{\link{estimate_team_possessions_basic}},
   \code{\link{estimate_team_possessions_custom}}
 }
+\concept{summarize_pbp_data}

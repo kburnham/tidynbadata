@@ -23,3 +23,4 @@ Other summarize_pbp_data: \code{\link{compute_effective_field_goal_percentage}},
   \code{\link{estimate_team_possessions_basic}},
   \code{\link{estimate_team_possessions_custom}}
 }
+\concept{summarize_pbp_data}

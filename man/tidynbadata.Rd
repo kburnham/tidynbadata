@@ -4,10 +4,9 @@
 \name{tidynbadata}
 \alias{tidynbadata}
 \alias{tidynbadata-package}
-\alias{tidynbadata-package}
 \title{Tools for computing advanced NBA statistics}
 \description{
-Tools for computing advanced NBA statistics
+What the package does (one paragraph).
 }
 \section{Package Options}{
 
