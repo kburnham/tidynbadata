@@ -341,7 +341,7 @@ fix_pbp <- function(raw_msf_pbp) {
       }
 
     } else if (game_id  %in%  c(47938, 47952, 48024L, 48039L, 48048L, 48093L,
-                                48151L, 48280L, 48353L)) {
+                                48151L, 48280L, 48353L, 48541L, 48579L)) {
       if (str_detect(plays$description[2], 'added for start of quarter')) {
         message('a player that was already a starter was inserted into the game in row 2')
         plays <- plays %>% slice(-2)
@@ -502,7 +502,7 @@ fix_pbp <- function(raw_msf_pbp) {
     }
     message("Thomas Bryant not added at start of 2nd OT")
     new_row <- tibble(description = "Thomas Bryant added for start of quarter",
-                      substitution.incomingPlayer.id = 13586L,
+                      substitution.incomingPlayer.id = 13856L,
                       total_elapsed_seconds = 3480L,
                       substitution.team.abbreviation = 'WAS',
                       substitution.team.id = 94L,
@@ -514,9 +514,9 @@ fix_pbp <- function(raw_msf_pbp) {
                       playStatus.secondsElapsed = 0L
     )
 
-    plays <- bind_rows(plays %>% slice(1:598),
+    plays <- bind_rows(plays %>% slice(1:599),
                        new_row,
-                       plays %>% slice((599):nrow(plays))
+                       plays %>% slice((600):nrow(plays))
     )
 
 
@@ -704,6 +704,11 @@ fix_pbp <- function(raw_msf_pbp) {
         plays <- plays %>% slice(-395)
       }
 
+    } else if (game_id == 48603) {
+      if (plays$description[414] == "Trae Young added for start of quarter") {
+        message("Trae Young in correctly addes as 4th quarter starter")
+        plays <- plays %>% slice(-414)
+      }
     }
 
 

@@ -35,6 +35,8 @@ break_lineup_id <- function(lineup_id)
 #' @param lineup a lineup vector
 #' @param pd player data
 #'
+#' @export
+#' @family lineup_helpers
 #' @return a concateneated string of initial-number combinations
 
 get_lineup_initials <- function(lineup, pd) {
@@ -43,6 +45,11 @@ get_lineup_initials <- function(lineup, pd) {
     inits <- pd %>% filter(player.id == player_id) %>%
       mutate(inits = glue::glue('{str_sub(player.firstName, 1,1)}{str_sub(player.lastName, 1, 1)}{player.jerseyNumber}')) %>%
       dplyr::pull(inits)
+    if (length(inits) == 0) {
+      message(glue("{player_id} not found in player data"))
+      inits <- as.character(player_id)
+    }
+    return(inits)
   }
   inits <- purrr::map_chr(lineup, get_inits, pd = pd)
   return(paste(inits, collapse = '-'))

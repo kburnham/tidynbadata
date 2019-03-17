@@ -2,7 +2,7 @@
 % Please edit documentation in R/summarize_pbp_data.R
 \name{compute_free_throw_rate}
 \alias{compute_free_throw_rate}
-\title{Compute offensive and defensive rebound rate for a chunck of pbp data}
+\title{Compute the free throw rate for a chunk of pbp data}
 \usage{
 compute_free_throw_rate(dat, use_attempted = TRUE)
 }
@@ -10,14 +10,19 @@ compute_free_throw_rate(dat, use_attempted = TRUE)
 \item{dat}{a tibble of pbp data}
 }
 \value{
-a list with ftr (free throw rate) and dftr (defensive free throw rate)
+the free throw rate for the reference team for the given chunk of pbp data
 }
 \description{
-Compute offensive and defensive rebound rate for a chunck of pbp data
+Compute the free throw rate for a chunk of pbp data
 }
 \seealso{
-Other summarize_pbp_data: \code{\link{compute_effective_field_goal_percentage}},
-  \code{\link{compute_eight_factors}},
+Other summarize_pbp_data: \code{\link{compute_average_plus_minus}},
+  \code{\link{compute_defensive_free_throw_rate}},
+  \code{\link{compute_defensive_rebound_rate}},
+  \code{\link{compute_defensive_turnover_rate}},
+  \code{\link{compute_effective_defensive_fgp}},
+  \code{\link{compute_effective_fgp}},
+  \code{\link{compute_plus_minus}},
   \code{\link{compute_rebound_rate}},
   \code{\link{compute_turnover_rate}},
   \code{\link{estimate_team_possessions_basic}},

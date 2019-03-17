@@ -2,7 +2,7 @@
 % Please edit documentation in R/summarize_pbp_data.R
 \name{compute_rebound_rate}
 \alias{compute_rebound_rate}
-\title{Compute the offensive and defensive rebound rate for the reference team for a given
+\title{Compute the offensive  rebound rate for the reference team for a given
 chunk of pbp data}
 \usage{
 compute_rebound_rate(dat)
@@ -11,16 +11,21 @@ compute_rebound_rate(dat)
 \item{dat}{a tibble with pbp data}
 }
 \value{
-a list with orp (offensive rebounding percentage) and drp (defensive rebounding percentage)
+offensive rebounding percentage for the reference team in the given chunk of data
 }
 \description{
-Compute the offensive and defensive rebound rate for the reference team for a given
+Compute the offensive  rebound rate for the reference team for a given
 chunk of pbp data
 }
 \seealso{
-Other summarize_pbp_data: \code{\link{compute_effective_field_goal_percentage}},
-  \code{\link{compute_eight_factors}},
+Other summarize_pbp_data: \code{\link{compute_average_plus_minus}},
+  \code{\link{compute_defensive_free_throw_rate}},
+  \code{\link{compute_defensive_rebound_rate}},
+  \code{\link{compute_defensive_turnover_rate}},
+  \code{\link{compute_effective_defensive_fgp}},
+  \code{\link{compute_effective_fgp}},
   \code{\link{compute_free_throw_rate}},
+  \code{\link{compute_plus_minus}},
   \code{\link{compute_turnover_rate}},
   \code{\link{estimate_team_possessions_basic}},
   \code{\link{estimate_team_possessions_custom}}

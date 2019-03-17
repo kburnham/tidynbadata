@@ -18,9 +18,14 @@ A basic function for estimating the number of possesions for a team
 in a given chunk of play-by-play data
 }
 \seealso{
-Other summarize_pbp_data: \code{\link{compute_effective_field_goal_percentage}},
-  \code{\link{compute_eight_factors}},
+Other summarize_pbp_data: \code{\link{compute_average_plus_minus}},
+  \code{\link{compute_defensive_free_throw_rate}},
+  \code{\link{compute_defensive_rebound_rate}},
+  \code{\link{compute_defensive_turnover_rate}},
+  \code{\link{compute_effective_defensive_fgp}},
+  \code{\link{compute_effective_fgp}},
   \code{\link{compute_free_throw_rate}},
+  \code{\link{compute_plus_minus}},
   \code{\link{compute_rebound_rate}},
   \code{\link{compute_turnover_rate}},
   \code{\link{estimate_team_possessions_custom}}
