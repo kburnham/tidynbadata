@@ -57,4 +57,30 @@ get_lineup_initials <- function(lineup, pd) {
 }
 
 
+#' Convert a lineup to a string of player last name + player jersey number
+#'
+#' @param lineup a lineup vector
+#' @param pd player data
+#'
+#' @export
+#' @family lineup_helpers
+#' @return a concateneated string of last name-number combinations
+
+get_lineup_last_names <- function(lineup, pd) {
+  if (length(lineup) != 5) return(NA)
+  get_lastname <- function(player_id, pd) {
+    lastname <- pd %>% filter(player.id == player_id) %>%
+      mutate(lastname = glue::glue('{player.lastName}{player.jerseyNumber}')) %>%
+      dplyr::pull(lastname)
+    if (length(lastname) == 0) {
+      message(glue("{player_id} not found in player data"))
+      inits <- as.character(player_id)
+    }
+    return(lastname)
+  }
+  lastname <- purrr::map_chr(lineup, get_lastname, pd = pd)
+  return(paste(lastname, collapse = '-'))
+
+}
+
 

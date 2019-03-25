@@ -709,6 +709,65 @@ fix_pbp <- function(raw_msf_pbp) {
         message("Trae Young in correctly addes as 4th quarter starter")
         plays <- plays %>% slice(-414)
       }
+    } else if (game_id == 48638) {
+      if (plays$description[371] == 'Bobby Portis added for start of quarter') {
+        message("Bobby Portis incorrectly added as 4th quarter starter")
+        plays <- plays %>% slice(-371)
+      }
+    } else if (game_id == 48639) {
+      if (nrow(plays %>% filter(playStatus.quarter == 5 &
+                                playStatus.secondsElapsed == 0 &
+                                str_detect(description, 'Caboclo added'))) == 0) {
+        message("Bruno Caboclo was not added at the start of the first OT period")
+        new_row <- tibble(description = "Bruno Caboclo added for start of quarter",
+                          substitution.incomingPlayer.id = 9494L,
+                          total_elapsed_seconds = 2880L,
+                          substitution.team.abbreviation = 'MEM',
+                          substitution.team.id = 107L,
+                          substitution.incomingPlayer.lastName = 'Caboclo',
+                          substitution.incomingPlayer.firstName = 'Bruno',
+                          substitution.incomingPlayer.position = 'SF',
+                          substitution.incomingPlayer.jerseyNumber = 20L,
+                          playStatus.quarter = 5L,
+                          playStatus.secondsElapsed = 0L
+        )
+        plays <- bind_rows(plays %>% slice(1:522),
+                           new_row,
+                           plays %>% slice((523):nrow(plays))
+        )
+
+      }
+    } else if (game_id == 48653) {
+      if (plays$description[105] == "Nene added for start of quarter") {
+
+        message("Hilario Nene was added at the start of the 2nd quarter but then removed")
+        plays <- plays %>% slice(-105)
+        new_row <- tibble(description = "Nene added for start of quarter",
+                          substitution.incomingPlayer.id = 9521L,
+                          total_elapsed_seconds = 720L,
+                          substitution.team.abbreviation = 'HOU',
+                          substitution.team.id = 109L,
+                          substitution.incomingPlayer.lastName = 'Nene',
+                          substitution.incomingPlayer.firstName = '',
+                          substitution.incomingPlayer.position = 'C',
+                          substitution.incomingPlayer.jerseyNumber = 42L,
+                          playStatus.quarter = 2L,
+                          playStatus.secondsElapsed = 0L
+        )
+        plays <- bind_rows(plays %>% slice(1:112),
+                           new_row,
+                           plays %>% slice((113):nrow(plays))
+        )
+      }
+    } else if (game_id == 48663) {
+      if (plays$description[274] == "Yogi Ferrell added for start of quarter (SUB)") {
+        message("Yogi Ferrell incorrectly added as 3rd quarter starter")
+        plays <- plays %>% slice(-274)
+      }
+      if (plays$description[412] == "SUB: Hield FOR Ferrell") {
+        message("Buddy Hield is already on the floor, but is subbed in for Ferrell (who is not on the floor)")
+        plays <- plays %>% slice(-412)
+      }
     }
 
 
