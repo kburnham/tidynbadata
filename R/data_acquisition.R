@@ -60,11 +60,12 @@ get_team_schedule <- function(team,
 #'
 #' @param game_id the MSF game id for the desired game
 #' @param team strng to indicate team. Is passed to interpret team so can be any of name, city, id or abbreviation
+#' @season string name of desired season. Defaults to \code{getOption('tidynbadata.current_season')}
 #' @export
 #' @family data_acquisition
 #' @return tibble of lineup data for given game and team
 #'
-get_lineup <- function(game_id, team) {
+get_lineup <- function(game_id, team, season = getOption('tidynbadata.current_season')) {
   team_id <- interpret_team(team)$id
   check_archive_dir()
   lu_archive <- file.path(getOption('tidynbadata.archive_path'), 'line_up_archive')
@@ -81,7 +82,7 @@ get_lineup <- function(game_id, team) {
     raw <- mysportsfeedsR::msf_get_results(league = 'nba',
                                            version = getOption('tidynbadata.msf_version_id'),
                                            feed = 'game_lineup',
-                                           season = getOption('tidynbadata.current_season'),
+                                           season = season,
                                            params = list(game = game_id))
 
 
