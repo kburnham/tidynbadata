@@ -17,4 +17,7 @@ a concateneated string of initial-number combinations
 \description{
 Convert a lineup to a string of player initials + player jersey number
 }
+\seealso{
+Other lineup_helpers: \code{\link{get_lineup_last_names}}
+}
 \concept{lineup_helpers}

@@ -60,7 +60,7 @@ get_team_schedule <- function(team,
 #'
 #' @param game_id the MSF game id for the desired game
 #' @param team strng to indicate team. Is passed to interpret team so can be any of name, city, id or abbreviation
-#' @season string name of desired season. Defaults to \code{getOption('tidynbadata.current_season')}
+#' @param season string name of desired season. Defaults to \code{getOption('tidynbadata.current_season')}
 #' @export
 #' @family data_acquisition
 #' @return tibble of lineup data for given game and team
@@ -132,12 +132,12 @@ get_raw_pbp <- function(game_id) {
 
 #' downloads a data.frame of NBA player data from mysportsfeeds
 #'
-#' @param force_reload when TRUE will ignore the archive and download new data
+#' @param season season for desired player data, defaults to \code{getOption('tidynbadata.current_season')}
 #' @export
 #' @family data_acquisition
 #' @return a data.frame of player data
 
-get_player_data <- function() {
+get_player_data <- function(season = getOption('tidynbadata.current_season')) {
   check_archive_dir()
   player_data_archive <- file.path(getOption('tidynbadata.archive_path'), 'player_data_archive')
   if (!dir.exists(player_data_archive)) dir.create(player_data_archive)
@@ -154,7 +154,7 @@ get_player_data <- function() {
     player_data <- mysportsfeedsR::msf_get_results(version = getOption('tidynbadata.msf_version_id'),
                                    league = 'nba',
                                    feed = 'players',
-                                   season = getOption('tidynbadata.current_season'))
+                                   season = season)
     saveRDS(player_data, pd_file_path)
   }
 

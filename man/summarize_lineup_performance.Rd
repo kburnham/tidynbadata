@@ -4,12 +4,17 @@
 \alias{summarize_lineup_performance}
 \title{Summarize the performance of each unique lineup in the provided pbp data}
 \usage{
-summarize_lineup_performance(dat, minimum_minutes)
+summarize_lineup_performance(dat, minimum_minutes, round = 4,
+  player_data = NULL)
 }
 \arguments{
 \item{dat}{a tibble with play-by-play data}
 
 \item{minimum_minutes}{lineups with fewer minutes played that this will be excluded}
+
+\item{round}{round advanced stats to this many places}
+
+\item{player_data}{a tibble with msf player data, used to create lineup_ids. If not provided, player ids are left uninterpreted}
 }
 \value{
 a tibble with summary statistics for each unique lineup in the provided data

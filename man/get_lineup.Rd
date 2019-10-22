@@ -4,12 +4,15 @@
 \alias{get_lineup}
 \title{Get a list of starters and bench players for a given game_id}
 \usage{
-get_lineup(game_id, team)
+get_lineup(game_id, team,
+  season = getOption("tidynbadata.current_season"))
 }
 \arguments{
 \item{game_id}{the MSF game id for the desired game}
 
 \item{team}{strng to indicate team. Is passed to interpret team so can be any of name, city, id or abbreviation}
+
+\item{season}{string name of desired season. Defaults to \code{getOption('tidynbadata.current_season')}}
 }
 \value{
 tibble of lineup data for given game and team
