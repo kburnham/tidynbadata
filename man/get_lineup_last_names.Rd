@@ -18,6 +18,7 @@ a concateneated string of last name-number combinations
 Convert a lineup to a string of player last name + player jersey number
 }
 \seealso{
-Other lineup_helpers: \code{\link{get_lineup_initials}}
+Other lineup_helpers: 
+\code{\link{get_lineup_initials}()}
 }
 \concept{lineup_helpers}

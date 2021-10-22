@@ -11,6 +11,7 @@ compute_game_playing_time <- function(pbp, team) {
 
   team_id <- interpret_team(team)$id
   if (length(pbp) == 2) pbp <- pbp[[as.character(team_id)]]
+  game_id <- pbp$game_id[1]
   lineup <- get_lineup(game_id, team_id)
   player_ids <- lineup$player.id[!is.na(lineup$player.id)]
 
@@ -43,6 +44,7 @@ compute_game_playing_time <- function(pbp, team) {
 #' @param pbp a tibble of play-by-play data
 #' @param team desired team's name, nickname, abbreviation or id
 #' @param pt a data.frame of playing time from the game in question, as returned by the function \code{compute_game_playing_time()}
+#' @param games a complete (raw) schedule of nba games
 #' @family pbp_audit
 #' @export
 #' @return NULL

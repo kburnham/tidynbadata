@@ -17,6 +17,7 @@ audit_pof_vec(pbp, team, pt, games)
 Audit the gs_this_pof_vec column for pbp data printing out informative messages to the console
 }
 \seealso{
-Other pbp_audit: \code{\link{compute_game_playing_time}}
+Other pbp_audit: 
+\code{\link{compute_game_playing_time}()}
 }
 \concept{pbp_audit}

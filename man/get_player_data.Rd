@@ -4,10 +4,10 @@
 \alias{get_player_data}
 \title{downloads a data.frame of NBA player data from mysportsfeeds}
 \usage{
-get_player_data()
+get_player_data(season = getOption("tidynbadata.current_season"))
 }
 \arguments{
-\item{force_reload}{when TRUE will ignore the archive and download new data}
+\item{season}{season for desired player data, defaults to \code{getOption('tidynbadata.current_season')}}
 }
 \value{
 a data.frame of player data
@@ -16,9 +16,10 @@ a data.frame of player data
 downloads a data.frame of NBA player data from mysportsfeeds
 }
 \seealso{
-Other data_acquisition: \code{\link{get_lineup}},
-  \code{\link{get_raw_msf_box_score}},
-  \code{\link{get_raw_pbp}},
-  \code{\link{get_team_schedule}}
+Other data_acquisition: 
+\code{\link{get_lineup}()},
+\code{\link{get_raw_msf_box_score}()},
+\code{\link{get_raw_pbp}()},
+\code{\link{get_team_schedule}()}
 }
 \concept{data_acquisition}

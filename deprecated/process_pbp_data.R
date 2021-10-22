@@ -1,16 +1,10 @@
-#' Functions for processing and customizing play by play data
+#' Process raw pbp data
 #'
-#' This function replaces add_lineups_to_pbp. It uses the raw results of the
-#' msf api call, extracts the play-by-play archive data.frame and:
-#' 1) adds players on the floor vectors for each team
-#' 2) adds columns - OriginalRow this just numbers each row in the original data.frame for later rejoins
-#'                 - total_elapsed_seconds - this indicates the number of seconds of play time elapsed since
-#'                 the beginning of the game
-#' 3) personalizes the data.frame for each of the two teams involved, this means:
-#'    a) rename the columns from "home"-"away" to "team"-"opponent"
-#'    b) does the same with the players on the floor list columns
-#' 4) archives both versions of the pbp in the tidynbadata$ARCHIVE_DIR/proc_pbp_archive
-#' 5) Add other columns (i.e. current team score, current oppononet score, game_status (winning, losing, tied))
+#'
+#' @param game_id msf game id
+#' @export
+#' @return processed play by play data
+#'
 
 process_raw_pbp <- function(game_id) {
 
@@ -104,6 +98,7 @@ process_raw_pbp <- function(game_id) {
 #' @param team_id  msf id of the team you wish to customize the report for
 #' @param opponent_id msf id of the opponent
 #' @param loc location of game with reference to custom team - either 'home' or 'away'
+#' @export
 #'
 #' @return a play-by-play customized to one team with references to 'home' and 'away' changed to 'team' and 'opponent'
 #' accordingly
@@ -233,6 +228,7 @@ customize_pbp <- function(pbp, team_id, opponent_id, loc) {
 #'
 #' @param team team id, name, city or abbreviation
 #' @param subs data.frame of substitution information
+#' @export
 #'
 #' @return play-by-play data with players_on_the_floor columns attached
 #'
@@ -292,12 +288,12 @@ process_sub <- function(current, player_in, player_out) {
 #' @param custom_pbp
 #'
 #' @returm play-by-play data with the following columns appended (Each with the \code{score} prefix:
-#'  - score_points_this_team - number of points scored by reference team in that row
-#'  - score_points_opponent_team - number of point scored by opponent team in that row
-#'  - score_this_team_current - current score of the reference team in that row
-#'  - score_opponent_team_current - current score of the oponent team in that row
-#'  - score_game_status - one of 'winning', 'losing', 'tied' from perspective of reference team
-#'  - score_differential - current reference team score minus current oponent team score
+#'  score_points_this_team - number of points scored by reference team in that row
+#'  score_points_opponent_team - number of point scored by opponent team in that row
+#'  score_this_team_current - current score of the reference team in that row
+#'  score_opponent_team_current - current score of the oponent team in that row
+#'  score_game_status - one of 'winning', 'losing', 'tied' from perspective of reference team
+#'  score_differential - current reference team score minus current oponent team score
 #'
 add_score_data <- function(custom_pbp) {
   new <- custom_pbp %>% mutate(score_points_this_team = case_when(fieldGoalAttempt.result == 'SCORED' & fieldGoalAttempt.team == 'this_team' ~ fieldGoalAttempt.points,
@@ -319,25 +315,19 @@ add_score_data <- function(custom_pbp) {
 #'
 #'
 #' Load customized play-by-play data for a given game and team
+#'
 #' @param game_id the msf_game_id for the desired game
 #' @param team the id, name, city or abbr of the desired team
+#' @export
 #'
 #' @return a pbp data.frame
 #'
 load_pbp_data <- function(game_id, team) {
-  ## check the archive, if there is one, load and return, if not, load raw, process, archive and return
+  # check the archive, if there is one, load and return, if not, load raw, process, archive and return
   pbp <- process_raw_pbp(game_id)
   team_id <- interpret_team(team)$id
   return(pbp[[glue('`{team_id}`')]])
 }
 
-#' Add segment information to custom play-by-play. This creates a segement id for every row
-#' A segment is a contiguous period of time with the same 5 players on the court.
-add_segment_data <- function(pof, tes) {
-  #TODO
-  # not sure how to handle this yet
 
 
-}
-
-custom2 %>% select(contains('score')) %>% tail

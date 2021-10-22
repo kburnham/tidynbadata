@@ -4,8 +4,7 @@
 \alias{get_lineup}
 \title{Get a list of starters and bench players for a given game_id}
 \usage{
-get_lineup(game_id, team,
-  season = getOption("tidynbadata.current_season"))
+get_lineup(game_id, team, season = getOption("tidynbadata.current_season"))
 }
 \arguments{
 \item{game_id}{the MSF game id for the desired game}
@@ -21,9 +20,10 @@ tibble of lineup data for given game and team
 Get a list of starters and bench players for a given game_id
 }
 \seealso{
-Other data_acquisition: \code{\link{get_player_data}},
-  \code{\link{get_raw_msf_box_score}},
-  \code{\link{get_raw_pbp}},
-  \code{\link{get_team_schedule}}
+Other data_acquisition: 
+\code{\link{get_player_data}()},
+\code{\link{get_raw_msf_box_score}()},
+\code{\link{get_raw_pbp}()},
+\code{\link{get_team_schedule}()}
 }
 \concept{data_acquisition}

@@ -18,16 +18,17 @@ the average plus minus for the reference team for the provided data
 Compute the average plus minus for the reference team for a given chunk of pbp data
 }
 \seealso{
-Other summarize_pbp_data: \code{\link{compute_defensive_free_throw_rate}},
-  \code{\link{compute_defensive_rebound_rate}},
-  \code{\link{compute_defensive_turnover_rate}},
-  \code{\link{compute_effective_defensive_fgp}},
-  \code{\link{compute_effective_fgp}},
-  \code{\link{compute_free_throw_rate}},
-  \code{\link{compute_plus_minus}},
-  \code{\link{compute_rebound_rate}},
-  \code{\link{compute_turnover_rate}},
-  \code{\link{estimate_team_possessions_basic}},
-  \code{\link{estimate_team_possessions_custom}}
+Other summarize_pbp_data: 
+\code{\link{compute_defensive_free_throw_rate}()},
+\code{\link{compute_defensive_rebound_rate}()},
+\code{\link{compute_defensive_turnover_rate}()},
+\code{\link{compute_effective_defensive_fgp}()},
+\code{\link{compute_effective_fgp}()},
+\code{\link{compute_free_throw_rate}()},
+\code{\link{compute_plus_minus}()},
+\code{\link{compute_rebound_rate}()},
+\code{\link{compute_turnover_rate}()},
+\code{\link{estimate_team_possessions_basic}()},
+\code{\link{estimate_team_possessions_custom}()}
 }
 \concept{summarize_pbp_data}

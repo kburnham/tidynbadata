@@ -4,8 +4,11 @@
 \alias{get_team_schedule}
 \title{Download tibble of the schedule (with results for completed games) for a given NBA team (use the 3 letter id)}
 \usage{
-get_team_schedule(team, season = getOption("tidynbadata.current_season"),
-  version = getOption("tidynbadata.msf_version_id"))
+get_team_schedule(
+  team,
+  season = getOption("tidynbadata.current_season"),
+  version = getOption("tidynbadata.msf_version_id")
+)
 }
 \arguments{
 \item{team}{the 3 letter id for an NBA team}
@@ -23,9 +26,10 @@ a tibble showing game data for the given team
 Download tibble of the schedule (with results for completed games) for a given NBA team (use the 3 letter id)
 }
 \seealso{
-Other data_acquisition: \code{\link{get_lineup}},
-  \code{\link{get_player_data}},
-  \code{\link{get_raw_msf_box_score}},
-  \code{\link{get_raw_pbp}}
+Other data_acquisition: 
+\code{\link{get_lineup}()},
+\code{\link{get_player_data}()},
+\code{\link{get_raw_msf_box_score}()},
+\code{\link{get_raw_pbp}()}
 }
 \concept{data_acquisition}

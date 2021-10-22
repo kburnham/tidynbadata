@@ -16,7 +16,7 @@
 
 tidynbadata_default_options <- list(
   tidynbadata.archive_path = "~/tidynbadata_archive",
-  tidynbadata.current_season = "2019-2020-regular",
+  tidynbadata.current_season = "2021-2022-regular",
   tidynbadata.msf_version_id = "2.0"
 )
 

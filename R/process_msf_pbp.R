@@ -1,4 +1,3 @@
-
 #' High level function for converting raw msf pbp to a tidynbadata pbp tibble
 #'
 #' Typically it is not necessary to call this function directly. It is better to
@@ -116,6 +115,10 @@ get_msf_raw_columns <- function(raw_msf_pbp) {
   missing_vio_cols <- setdiff(vio_cols, names(plays))
   for (mvc in missing_vio_cols) plays[[mvc]] <- NA
 
+  missing_jb_cols <- setdiff(jb_cols, names(plays))
+  for (jb in missing_jb_cols) plays[[jb]] <- NA_integer_
+
+
   ## test for existence of location data, where missing data is necessary, use -1n
   if (!"foul.location.x" %in% names(plays)) {
     plays$foul.location.x <- NA
@@ -176,8 +179,7 @@ compute_tes <- function(x, y) {
 #' @param plays a raw data.frame from msf play-by-play data
 #' @param team_id id of the reference team
 #' @param opponent_id id of the opponent team
-#' @param loc either 'home' or 'away' indicating the location from the
-#' perspective of the reference team
+#' @param loc either 'home' or 'away' indicating the location from the perspective of the reference team
 #' @importFrom dplyr transmute case_when if_else
 #' @return a data.frame with customized pbp data
 #'

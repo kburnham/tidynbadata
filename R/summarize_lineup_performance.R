@@ -15,7 +15,7 @@ summarize_lineup_performance <- function(dat, minimum_minutes, round = 4, player
   lu_performance <- dat %>%
     group_by(gs_this_pof_id) %>%
     filter(!is.na(gs_this_pof_id)) %>%
-    summarize(lineup_vec = first(gs_this_pof_vec),
+    summarize(lineup_vec = list(first(gs_this_pof_vec)),
               team = interpret_team(first(team_id))$abbr,
               min = round(sum(gs_seconds_until_next_event, na.rm = TRUE) / 60, 1),
               `+/- min` = compute_average_plus_minus(.data) %>% round(round),
@@ -37,7 +37,7 @@ summarize_lineup_performance <- function(dat, minimum_minutes, round = 4, player
   if (!is.null(player_data)) {
     lu_performance <- lu_performance %>%
       rowwise() %>%
-      mutate(lineup = get_lineup_last_names(lineup_vec, pd = players)) %>%
+      mutate(lineup = get_lineup_last_names(lineup_vec, pd = player_data)) %>%
       select(-gs_this_pof_id) %>%
       select(lineup, everything())
   } else {

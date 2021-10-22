@@ -4,7 +4,8 @@
 \name{tidynbadata_pbp}
 \alias{tidynbadata_pbp}
 \title{A sample data.frame of play-by-play data}
-\format{a data.frame with 584 rows and 65 columns of play-by-play data from a
+\format{
+a data.frame with 584 rows and 65 columns of play-by-play data from a
 single nba game
 \describe{
 \item{gs_description}{a short text description of the event}
@@ -21,7 +22,8 @@ single nba game
 \item{gs_opp_pof_id}{a hyphen separated string of player ids, sorted low to high, concatenated from gs_opp_pof_vec}
 \item{gs_seconds_until_next_event}{an integer indicating how many seconds
 until the occurence of the next event (row) in the data. Use this column to compute playing time}
-}}
+}
+}
 \usage{
 tidynbadata_pbp
 }

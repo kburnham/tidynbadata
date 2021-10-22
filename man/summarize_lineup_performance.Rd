@@ -4,8 +4,12 @@
 \alias{summarize_lineup_performance}
 \title{Summarize the performance of each unique lineup in the provided pbp data}
 \usage{
-summarize_lineup_performance(dat, minimum_minutes, round = 4,
-  player_data = NULL)
+summarize_lineup_performance(
+  dat,
+  minimum_minutes,
+  round = 4,
+  player_data = NULL
+)
 }
 \arguments{
 \item{dat}{a tibble with play-by-play data}

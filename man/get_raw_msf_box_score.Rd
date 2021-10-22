@@ -16,8 +16,10 @@ a raw boxscore object from mysportsfeeds, which is also archived
 Retrieve a raw box score pull from mysportsfeeds based on a game_id
 }
 \seealso{
-Other data_acquisition: \code{\link{get_lineup}},
-  \code{\link{get_player_data}}, \code{\link{get_raw_pbp}},
-  \code{\link{get_team_schedule}}
+Other data_acquisition: 
+\code{\link{get_lineup}()},
+\code{\link{get_player_data}()},
+\code{\link{get_raw_pbp}()},
+\code{\link{get_team_schedule}()}
 }
 \concept{data_acquisition}

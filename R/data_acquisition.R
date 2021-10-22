@@ -126,6 +126,7 @@ get_raw_pbp <- function(game_id) {
                          season = getOption('tidynbadata.current_season'),
                          params = list(game = game_id))
 
+  if (raw$response$status_code == 204) stop('the following game_id was not found: ', game_id)
   saveRDS(raw, pbp_file_path)
   return(raw)
 }

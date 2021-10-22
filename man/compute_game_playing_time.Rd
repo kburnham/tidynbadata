@@ -20,6 +20,7 @@ Compute playing time for all players for a given game and team. This is used pri
 players-on-the-floor issues caused by missing or extra substitutions
 }
 \seealso{
-Other pbp_audit: \code{\link{audit_pof_vec}}
+Other pbp_audit: 
+\code{\link{audit_pof_vec}()}
 }
 \concept{pbp_audit}
