@@ -8,6 +8,7 @@
 #' @param minimum_minutes lineups with fewer minutes played that this will be excluded
 #' @param round round advanced stats to this many places
 #' @param player_data a tibble with msf player data, used to create lineup_ids. If not provided, player ids are left uninterpreted
+#' @export
 #'
 #' @return a tibble with summary statistics for each unique lineup in the provided data
 #'
