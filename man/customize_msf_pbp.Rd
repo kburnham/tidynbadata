@@ -13,8 +13,7 @@ customize_msf_pbp(plays, team_id, opponent_id, loc)
 
 \item{opponent_id}{id of the opponent team}
 
-\item{loc}{either 'home' or 'away' indicating the location from the
-perspective of the reference team}
+\item{loc}{either 'home' or 'away' indicating the location from the perspective of the reference team}
 }
 \value{
 a data.frame with customized pbp data

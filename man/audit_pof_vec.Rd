@@ -12,6 +12,8 @@ audit_pof_vec(pbp, team, pt, games)
 \item{team}{desired team's name, nickname, abbreviation or id}
 
 \item{pt}{a data.frame of playing time from the game in question, as returned by the function \code{compute_game_playing_time()}}
+
+\item{games}{a complete (raw) schedule of nba games}
 }
 \description{
 Audit the gs_this_pof_vec column for pbp data printing out informative messages to the console
