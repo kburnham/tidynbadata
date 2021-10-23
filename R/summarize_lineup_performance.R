@@ -1,18 +1,15 @@
-# summarize lineup performance
-
-
-
 #' Summarize the performance of each unique lineup in the provided pbp data
 #'
 #' @param dat a tibble with play-by-play data
 #' @param minimum_minutes lineups with fewer minutes played that this will be excluded
 #' @param round round advanced stats to this many places
 #' @param player_data a tibble with msf player data, used to create lineup_ids. If not provided, player ids are left uninterpreted
+#' @param use_player_initials if TRUE (and if player_data provided) the lineup is shown as player initials + jersey number instead of last name
 #' @export
 #'
 #' @return a tibble with summary statistics for each unique lineup in the provided data
 #'
-summarize_lineup_performance <- function(dat, minimum_minutes, round = 4, player_data = NULL) {
+summarize_lineup_performance <- function(dat, minimum_minutes, round = 4, player_data = NULL, use_player_initials = FALSE) {
   lu_performance <- dat %>%
     group_by(gs_this_pof_id) %>%
     filter(!is.na(gs_this_pof_id)) %>%
@@ -38,7 +35,7 @@ summarize_lineup_performance <- function(dat, minimum_minutes, round = 4, player
   if (!is.null(player_data)) {
     lu_performance <- lu_performance %>%
       rowwise() %>%
-      mutate(lineup = get_lineup_last_names(lineup_vec, pd = player_data)) %>%
+      mutate(lineup = if_else(use_player_initials, get_lineup_initials(lineup_vec, pd = player_data), get_lineup_last_names(lineup_vec, pd = player_data))) %>%
       select(-gs_this_pof_id) %>%
       select(lineup, everything())
   } else {

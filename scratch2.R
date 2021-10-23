@@ -9,13 +9,8 @@ library(glue)
 
 
 authenticate_v2_x(apikey = keyring::key_get('msf_api_key'))
-#debugonce(get_team_schedule)
 sched <- get_team_schedule(team = 'Knicks')
-
 kgs <- sched %>% filter(status == 'complete') %>% pull(msf_game_id)
-
-
-kgs <- sched$msf_game_id[1]
 all_pbps <- map(kgs, load_pbp, team = 83)
 
 
@@ -26,17 +21,15 @@ pbp <- all_pbps[[1]]
 pbp %>% mutate(pof_count = map_int(gs_this_pof_vec, length)) %>% count(pof_count)
 pbp %>% mutate(pof_count = map_int(gs_opp_pof_vec, length)) %>% count(pof_count)
 
-pt <- compute_game_playing_time(pbp, 83)
+pt <- compute_game_playing_time(all_pbps[[2]], 83)
 
-
+sum(pt$minutes_played)
 
 
 pd <- readRDS('~/tidynbadata_archive/player_data_archive/player_data.rds')
-
 knicks <- pd$api_json$players %>% filter(teamAsOfDate.id == 83)
-
-
-knicks %>% select(player.id, player.firstName, player.lastName, player.jerseyNumber, player.currentRosterStatus) %>% filter(player.currentRosterStatus == 'ROSTER') %>% view
+knicks <- knicks %>% select(player.id, player.firstName, player.lastName, player.jerseyNumber, player.currentRosterStatus, player.primaryPosition) %>% filter(player.currentRosterStatus == 'ROSTER')
+knicks
 
 all_games <- mysportsfeedsR::msf_get_results(league = 'nba',
                                              season = getOption('tidynbadata.current_season'),
@@ -47,7 +40,7 @@ all_games <- mysportsfeedsR::msf_get_results(league = 'nba',
 games <- all_games$api_json$games
 
 
-audit_pof_vec(pbp, 83, pt, games)
+audit_pof_vec(all_pbps[[2]], 83, pt, games)
 
 pbp <- pbp %>% mutate(pof_this_count = map_int(gs_this_pof_vec, length),
                pof_opp_count = map_int(gs_opp_pof_vec, length),
@@ -64,8 +57,8 @@ pbp %>% filter(row_number > 395) %>% view
 
 debugonce(process_msf_pbp)
 
-raw_66675 <- readRDS('/Users/kevin/tidynbadata_archive/pbp_archive/66675.rds')
-pbp2 <- process_msf_pbp(raw_66675)
+raw_66689 <- readRDS('/Users/kevin/tidynbadata_archive/pbp_archive/66689.rds')
+pbp2 <- process_msf_pbp(raw_66689)
 
 pbp <- pbp2$`83`
 
@@ -82,7 +75,9 @@ pbp %>% filter(bad_row) %>% pull(row_number)
 
 pbp %>% select(gs_description, gs_quarter, gs_quarter_seconds_elapsed, ends_with('vec'), contains('sub')) %>% filter(gs_quarter >= 4) %>% view
 
-
+# all_pbps[[2]] %>% select(gs_description, gs_quarter, gs_quarter_seconds_elapsed, ends_with('vec'),contains('sub')) %>%
+#   mutate(elapse_time_min = floor(gs_quarter_seconds_elapsed / 60),
+#          elapse_time_sec = gs_quarter_seconds_elapsed - (60 * elapse_time_min)) %>% view
 
 pbp %>% select(gs_description, gs_quarter, gs_quarter_seconds_elapsed, ends_with('vec'),contains('sub')) %>%
   mutate(elapse_time_min = floor(gs_quarter_seconds_elapsed / 60),
