@@ -9,7 +9,7 @@ library(glue)
 
 
 authenticate_v2_x(apikey = keyring::key_get('msf_api_key'))
-sched <- get_team_schedule(team = 'Knicks')
+sched <- get_team_schedule(team = 'Bucks')
 kgs <- sched %>% filter(status == 'complete') %>% pull(msf_game_id)
 all_pbps <- map(kgs, load_pbp, team = 83)
 
