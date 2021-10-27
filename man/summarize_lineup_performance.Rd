@@ -8,7 +8,8 @@ summarize_lineup_performance(
   dat,
   minimum_minutes,
   round = 4,
-  player_data = NULL
+  player_data = NULL,
+  use_player_initials = FALSE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ summarize_lineup_performance(
 \item{round}{round advanced stats to this many places}
 
 \item{player_data}{a tibble with msf player data, used to create lineup_ids. If not provided, player ids are left uninterpreted}
+
+\item{use_player_initials}{if TRUE (and if player_data provided) the lineup is shown as player initials + jersey number instead of last name}
 }
 \value{
 a tibble with summary statistics for each unique lineup in the provided data

@@ -7,6 +7,7 @@
 #' (as returned by \code{get_raw_pbp(game_id)})
 #' @importFrom dplyr left_join mutate lead
 #' @importFrom tidyr fill
+#' @export
 #'
 #' @return a length 2 list of pbp tibbles, one for each team involved.
 #' This list is also archived.
@@ -162,6 +163,7 @@ get_msf_raw_columns <- function(raw_msf_pbp) {
 #' @param y seconds elapsed since the beginning of the quarter
 #' @return an integer indicating the total number of gametime seconds since the
 #' start of the game
+#' @export
 #' @importFrom dplyr if_else
 #'
 compute_tes <- function(x, y) {

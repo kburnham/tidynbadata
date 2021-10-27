@@ -134,3 +134,136 @@ if (nrow(first_bad_pof) > 5) {
 
 }
 
+
+#' convert a screen shot of ESPN playing time data to a data.frame
+#'
+#' @param infile the path to the screen shot, by default will use the most recent screen shot on the Desktop
+#' @export
+#' @family audit_functions
+#' @return data.frame of playing time info
+
+
+read_boxscore_screen_shot <- function(infile = 'most_recent_screen_shot') {
+
+  if (infile == 'most_recent_screen_shot') {
+    infile <- file.info(list.files("~/Desktop", full.names = T)) %>%
+      mutate(path = row.names(.)) %>%
+      filter(str_detect(path, 'Screen Shot')) %>%
+      arrange(desc(mtime)) %>%
+      head(1) %>%
+      pull(path)
+  }
+
+
+  eng <- tesseract("eng")
+  text <- tesseract::ocr(infile, engine = eng)
+
+  f <- text %>% str_split('\n') %>% unlist() %>%
+    str_split(' ') %>%
+    keep(. != "") %>% transpose() %>%
+    as.data.frame() %>%
+    set_names(c('first_init', 'last_name',  'pos', 'min')) %>%
+    filter(first_init != 'BENCH')
+  #f
+  return(f)
+
+}
+
+
+
+
+#' generate a row of substitution data for a pbp data.frame. This can be dput into fix pbp to add a missing row
+#'
+#' @param player_in_id the id of the player entering the game
+#' @param player_out_id the id of the player leaving the game
+#' @param player_data a data.frame of player data, as returned by \code{get_player_data()$api_json$players}
+#' @param quarter the quarter in which the substitution should occur
+#' @param elapsed_time_in_quarter number of seconds since the start of the quarter when the sub should be inserted
+#' @export
+#' @family audit_functions
+#' @return a one row data.frame with substitution data. This can be inserted into a pbp data.frame
+
+
+generate_substitution_row <- function(player_in_id, player_out_id, player_data, quarter, elapsed_time_in_quarter) {
+
+  player_in <- player_data %>% filter(player.id == player_in_id) %>%
+    select(first_name = player.firstName,
+           last_name = player.lastName,
+           position = player.primaryPosition,
+           id = player.id,
+           jersey_number = player.jerseyNumber,
+           team_id = player.currentTeam.id,
+           team_abbr = player.currentTeam.abbreviation)
+
+  player_out <- player_data %>% filter(player.id == player_out_id) %>%
+    select(first_name = player.firstName,
+           last_name = player.lastName,
+           position = player.primaryPosition,
+           id = player.id,
+           jersey_number = player.jerseyNumber,
+           team_id = player.currentTeam.id,
+           team_abbr = player.currentTeam.abbreviation)
+
+  new_description <- as.character(glue("{player_in$first_name} {player_in$last_name} added for {player_out$first_name} {player_out$last_name}"))
+  # we want ot make a single row of data subbing in the one player for the other
+  new_row <- tibble(description = new_description,
+                    substitution.incomingPlayer.id = as.integer(player_in$id),
+                    substitution.outgoingPlayer.id = as.integer(player_out$id),
+                    total_elapsed_seconds = compute_tes(quarter, elapsed_time_in_quarter),
+                    substitution.team.abbreviation = player_in$team_abbr,
+                    substitution.team.id = as.integer(player_in$team_id),
+                    substitution.incomingPlayer.lastName = player_in$last_name,
+                    substitution.incomingPlayer.firstName = player_in$first_name,
+                    substitution.incomingPlayer.position = player_in$position,
+                    substitution.incomingPlayer.jerseyNumber = as.integer(player_in$jersey_number),
+                    substitution.outgoingPlayer.lastName = player_out$last_name,
+                    substitution.outgoingPlayer.firstName = player_out$first_name,
+                    substitution.outgoingPlayer.position = player_out$position,
+                    substitution.outgoingPlayer.jerseyNumber = as.integer(player_out$jersey_number),
+                    playStatus.quarter = as.integer(quarter),
+                    playStatus.secondsElapsed = as.integer(elapsed_time_in_quarter))
+
+  return(new_row)
+}
+
+
+
+
+
+#' Given a sentence of data from ESPN play by play about a substituon, return the player ids of the entering and exiting player. Note that this function only works when the players have a single first and last name (e.g. Julius Randle, but not J.R. Barrett)
+#'
+#' @param sen the text indicating the substition (e.g."Mitchell Robinson enters the game for Julius Randle")
+#' @param player_data a data.frame of player data, as returned by \code{get_player_data()$api_json$players}
+#' @family audit_functions
+#' @export
+#' @return a length two list with names "pi_id" and "po_id" giving the msf player ids of the two players involved in the substitution
+
+get_player_ids_from_desc <- function(sen, player_data) {
+  s <- sen %>% str_remove(' enters the game for')
+  v <- s %>% str_split(' ') %>% unlist()
+  if (length(v) != 4) stop ('length should be 4 - 2 last names and 2 first names')
+  pi_id <- player_data %>% filter(player.firstName == v[1], player.lastName == v[2]) %>% pull(player.id)
+  po_id <- player_data %>% filter(player.firstName == v[3], player.lastName == v[4]) %>% pull(player.id)
+
+  return(list(player_in = pi_id, player_out = po_id))
+
+}
+
+#' Given a sentence of substitution data, this function returns a row of substitution data to be insterted into a pbp. This function combines the two functions \code{get_player_ids_from_desc()} and
+#' \code{generate_substitution_row()} to generate a single row of substitution data from a short description of the substition.
+#'
+#' @param desc a seneence that describes the substition, be in the format "x enters the game for y"
+#' @param player_data a data.frame of player data, as returned by \code{get_player_data()$api_json$players}
+#' @family audit_functions
+#' @return a 1 row data.frame of substitution data
+
+
+generate_substitution_row_from_desc <- function(desc, player_data, quarter, elapsed_time_in_quarter) {
+  ids <- get_player_ids_from_desc(desc, player_data)
+  row <- generate_substitution_row(player_in_id = ids$player_in, player_out_id = ids$player_out, player_data = player_data,
+                                   quarter = quarter, elapsed_time_in_quarter = elapsed_time_in_quarter)
+
+  return(row)
+
+}
+

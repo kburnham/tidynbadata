@@ -225,7 +225,43 @@ fix_pbp <- function(raw_msf_pbp) {
 
 
 
-    }
+     }
+
+  if (game_id == 66721) {
+    new_row <- structure(list(description = "Mitchell Robinson added for Taj Gibson",
+                              substitution.incomingPlayer.id = 15282L, substitution.outgoingPlayer.id = 9144L,
+                              total_elapsed_seconds = 1440, substitution.team.abbreviation = "NYK",
+                              substitution.team.id = 83L, substitution.incomingPlayer.lastName = "Robinson",
+                              substitution.incomingPlayer.firstName = "Mitchell", substitution.incomingPlayer.position = "C",
+                              substitution.incomingPlayer.jerseyNumber = 23L, substitution.outgoingPlayer.lastName = "Gibson",
+                              substitution.outgoingPlayer.firstName = "Taj", substitution.outgoingPlayer.position = "PF",
+                              substitution.outgoingPlayer.jerseyNumber = 67L, playStatus.quarter = 3L,
+                              playStatus.secondsElapsed = 0L), class = c("tbl_df", "tbl",
+                                                                         "data.frame"), row.names = c(NA, -1L))
+
+
+    plays <- bind_rows(plays %>% slice(1:218),
+                       new_row,
+                       plays %>% slice(219:nrow(plays)))
+
+
+    new_row <- structure(list(description = "Taj Gibson added for Mitchell Robinson",
+                              substitution.incomingPlayer.id = 9144L, substitution.outgoingPlayer.id = 15282L,
+                              total_elapsed_seconds = 2160, substitution.team.abbreviation = "NYK",
+                              substitution.team.id = 83L, substitution.incomingPlayer.lastName = "Gibson",
+                              substitution.incomingPlayer.firstName = "Taj", substitution.incomingPlayer.position = "PF",
+                              substitution.incomingPlayer.jerseyNumber = 67L, substitution.outgoingPlayer.lastName = "Robinson",
+                              substitution.outgoingPlayer.firstName = "Mitchell", substitution.outgoingPlayer.position = "C",
+                              substitution.outgoingPlayer.jerseyNumber = 23L, playStatus.quarter = 4L,
+                              playStatus.secondsElapsed = 0L), class = c("tbl_df", "tbl",
+                                                                         "data.frame"), row.names = c(NA, -1L))
+
+    plays <- bind_rows(plays %>% slice(1:313),
+                       new_row,
+                       plays %>% slice(314:nrow(plays)))
+  }
+
+
 
 
   # need to reattach the fixed play data here

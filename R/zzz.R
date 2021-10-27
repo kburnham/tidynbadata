@@ -14,14 +14,17 @@
 #' @name tidynbadata
 "_PACKAGE"
 
-tidynbadata_default_options <- list(
-  tidynbadata.archive_path = "~/tidynbadata_archive",
-  tidynbadata.current_season = "2021-2022-regular",
-  tidynbadata.msf_version_id = "2.0"
-)
+
 
 .onLoad <- function(libname, pkgname) {
   op <- options()
+
+  tidynbadata_default_options <- list(
+    tidynbadata.archive_path = "~/tidynbadata_archive",
+    tidynbadata.current_season = "2021-2022-regular",
+    tidynbadata.msf_version_id = "2.0"
+  )
+
   toset <- !(names(tidynbadata_default_options) %in% names(op))
   if (any(toset)) options(tidynbadata_default_options[toset])
 
