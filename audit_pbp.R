@@ -20,10 +20,11 @@ authenticate_v2_x(apikey = keyring::key_get('msf_api_key'))
 team <- interpret_team('Knicks')
 sched <- get_team_schedule(team = team$name)
 gs <- sched %>% filter(status == 'complete') %>% pull(msf_game_id)
+gs
 all_pbps <- map(gs, load_pbp, team = team$id)
 
 
-game_id <- 66721
+game_id <- 66738
 
 
 
@@ -84,8 +85,8 @@ substitutions <- pbp %>% select(gs_description, gs_quarter, gs_quarter_seconds_e
 view(substitutions)
 
 # row_from_desc ----
-sen <- "Taj Gibson enters the game for Mitchell Robinson"
-quarter <- 4
+sen <- "Mitchell Robinson enters the game for Taj Gibson"
+quarter <- 3
 elp <- 0
 get_player_ids_from_desc(sen, player_data)
 row <- generate_substitution_row_from_desc(sen, player_data = player_data, quarter = quarter, elapsed_time_in_quarter = elp)
@@ -93,5 +94,6 @@ dput(row)
 
 
 
-
-
+d <- summarize_lineup_performance(pbp, player_data = player_data, minimum_minutes = 0, use_player_initials = T)
+d
+sum(d$min)

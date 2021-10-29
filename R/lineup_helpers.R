@@ -6,6 +6,8 @@
 #' @param lineup a length five vector indicating players on the floor
 #' @param includes a vector of ids to check for inclusion in lineup
 #' @param excludes a vector of ids to check for exclusion fromt he lineup
+#' @export
+#' @return a boolean indicating if the lineup includes all of includes and exludes all of excludes
 
 filter_lineup <- function(lineup, includes, excludes)
   if (all(includes %in% lineup) & !any(excludes %in% lineup)) return(TRUE) else return(FALSE)
