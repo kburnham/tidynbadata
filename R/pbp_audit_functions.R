@@ -254,6 +254,7 @@ get_player_ids_from_desc <- function(sen, player_data) {
 #'
 #' @param desc a seneence that describes the substition, be in the format "x enters the game for y"
 #' @param player_data a data.frame of player data, as returned by \code{get_player_data()$api_json$players}
+#' @export
 #' @family audit_functions
 #' @return a 1 row data.frame of substitution data
 

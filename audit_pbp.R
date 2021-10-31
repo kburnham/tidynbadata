@@ -20,19 +20,25 @@ authenticate_v2_x(apikey = keyring::key_get('msf_api_key'))
 team <- interpret_team('Knicks')
 sched <- get_team_schedule(team = team$name)
 gs <- sched %>% filter(status == 'complete') %>% pull(msf_game_id)
+
 gs
 all_pbps <- map(gs, load_pbp, team = team$id)
-
-
-game_id <- 66738
-
-
 
 games <- mysportsfeedsR::msf_get_results(league = 'nba',
                                          season = getOption('tidynbadata.current_season'),
                                          feed = 'seasonal_games',
                                          version = getOption('tidynbadata.msf_version_id'),
                                          params = list())[['api_json']][['games']]
+audit_pof_vec(all_pbps[[length(gs)]], team = 83, pt = compute_game_playing_time(all_pbps[length(gs)], team = 83), games = games)
+
+
+
+
+game_id <- 66751
+
+
+
+
 
 
 pd <- get_player_data()
@@ -85,8 +91,8 @@ substitutions <- pbp %>% select(gs_description, gs_quarter, gs_quarter_seconds_e
 view(substitutions)
 
 # row_from_desc ----
-sen <- "Mitchell Robinson enters the game for Taj Gibson"
-quarter <- 3
+sen <- "Derrick Rose enters the game for Miles McBride"
+quarter <- 4
 elp <- 0
 get_player_ids_from_desc(sen, player_data)
 row <- generate_substitution_row_from_desc(sen, player_data = player_data, quarter = quarter, elapsed_time_in_quarter = elp)
