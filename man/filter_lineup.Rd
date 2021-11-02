@@ -13,6 +13,9 @@ filter_lineup(lineup, includes, excludes)
 
 \item{excludes}{a vector of ids to check for exclusion fromt he lineup}
 }
+\value{
+a boolean indicating if the lineup includes all of includes and excludes all of excludes
+}
 \description{
 This function returns TRUE for any lineup that includes all of includes and none of excludes.
 }

@@ -28,6 +28,7 @@ Given a sentence of substitution data, this function returns a row of substituti
 Other audit_functions: 
 \code{\link{generate_substitution_row}()},
 \code{\link{get_player_ids_from_desc}()},
-\code{\link{read_boxscore_screen_shot}()}
+\code{\link{read_boxscore_screen_shot}()},
+\code{\link{remove_pbp}()}
 }
 \concept{audit_functions}

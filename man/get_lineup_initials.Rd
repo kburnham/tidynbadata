@@ -19,6 +19,9 @@ Convert a lineup to a string of player initials + player jersey number
 }
 \seealso{
 Other lineup_helpers: 
-\code{\link{get_lineup_last_names}()}
+\code{\link{compare_lineups}()},
+\code{\link{get_lineup_last_names}()},
+\code{\link{subset_pbp_by_player_ids}()},
+\code{\link{tag_pbp_by_player_ids}()}
 }
 \concept{lineup_helpers}

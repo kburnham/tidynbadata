@@ -16,7 +16,7 @@ library(tesseract)
 
 authenticate_v2_x(apikey = keyring::key_get('msf_api_key'))
 
-
+# remove_pbp(game_id)
 team <- interpret_team('Knicks')
 sched <- get_team_schedule(team = team$name)
 gs <- sched %>% filter(status == 'complete') %>% pull(msf_game_id)
@@ -34,7 +34,7 @@ audit_pof_vec(all_pbps[[length(gs)]], team = 83, pt = compute_game_playing_time(
 
 
 
-game_id <- 66751
+game_id <- 66770
 
 
 
@@ -73,16 +73,16 @@ pbp %>% mutate(pof_count = map_int(gs_this_pof_vec, length)) %>% count(pof_count
 
 
 
-debugonce(read_boxscore_screen_shot)
-esp <- read_boxscore_screen_shot()
-
-
-pt %>% left_join(esp, by = c('last' = 'last_name')) %>% filter(round(minutes_played, 0) != min) %>%
-  select(last, first, min)
-
-
-pbp %>% filter(gs_event_type == 'sub', sub_player_in == 31054 | sub_player_out == 31054)
-pbp %>% filter(str_detect(gs_description, 'Grimes'))
+# debugonce(read_boxscore_screen_shot)
+# esp <- read_boxscore_screen_shot()
+#
+#
+# pt %>% left_join(esp, by = c('last' = 'last_name')) %>% filter(round(minutes_played, 0) != min) %>%
+#   select(last, first, min)
+#
+#
+# pbp %>% filter(gs_event_type == 'sub', sub_player_in == 31054 | sub_player_out == 31054)
+# pbp %>% filter(str_detect(gs_description, 'Grimes'))
 
 
 # view_pbp ----
@@ -91,8 +91,8 @@ substitutions <- pbp %>% select(gs_description, gs_quarter, gs_quarter_seconds_e
 view(substitutions)
 
 # row_from_desc ----
-sen <- "Derrick Rose enters the game for Miles McBride"
-quarter <- 4
+sen <- "Mitchell Robinson enters the game for Taj Gibson"
+quarter <- 3
 elp <- 0
 get_player_ids_from_desc(sen, player_data)
 row <- generate_substitution_row_from_desc(sen, player_data = player_data, quarter = quarter, elapsed_time_in_quarter = elp)
@@ -103,3 +103,29 @@ dput(row)
 d <- summarize_lineup_performance(pbp, player_data = player_data, minimum_minutes = 0, use_player_initials = T)
 d
 sum(d$min)
+
+
+
+apbp <- bind_rows(all_pbps)
+
+
+
+
+
+
+
+
+lineup1 = list(includes = c(17181, 9282),
+               excludes = c())
+lineup2 = list(includes = c(9282),
+               excludes = 17181)
+#debugonce(compare_lineups)
+cl_test <- compare_lineups(apbp, lineup1 = lineup1,
+                lineup2 = lineup2)
+
+
+# debugonce(tag_pbp_by_player_ids)
+tag_pbp_by_player_ids(apbp, lineup1$includes, lineup1$excludes) %>% count(include_lineup)
+
+filter_lineup(c(17181, 333, 555, 111, 999), includes = c(17181, 9282), excludes = c())
+

@@ -2,30 +2,6 @@
 
 
 
-
-#' subset a pbp datset according to players that must be, or must not be, in the current lineup
-#'
-#' @param pbp a processed play-by-play dataset
-#' @param includes a vector of player ids that must be in  \code{gs_this_pof_vec}
-#' @param excludes a vector of player ids that myst not be in \code{gs_this_pof_vec}
-#' @export
-#' @family lineup_helpers
-#' @return a pbp dataset subset according to includes and excludes
-#'
-
-subset_pbp_by_player_ids <- function(pbp, includes, exludes) {
-  return(pbp %>% filter(filter_lineup(gs_this_pof_vec, includes, exludes)))
-}
-
-
-
-#' Given a subset of pbp data return a data.frame of advances stats summarizing the data
-#'
-#' @pbp_dub subset of pbp data to summarize
-#' @export
-#' @family lineup_helpers
-#' @return a data.frame summarizing key statistics from the provided pbp file
-#'
 #'
 #' need to think about:
 #' how do we handle two lineups with overlapping minutes (i.e. some lineups are TRUE for both lineup definitions)
@@ -58,7 +34,9 @@ subset_pbp_by_player_ids <- function(pbp, includes, exludes) {
 
 summarize_pbp_subset <- function(pbp_sub) {
  summ <- pbp_sub %>% summarize(lineups = list(gs_this_pof_id),
-                               unique_lineup_count =
+                               unique_lineup_count = length(lineups),
+                               games = list(unique(game_id)),
+                               unique_game_count = length(games),
                                team = interpret_team(first(team_id))$abbr,
                                min = round(sum(gs_seconds_until_next_event, na.rm = TRUE) / 60, 1),
                                `+/- min` = compute_average_plus_minus(.data) %>% round(round),

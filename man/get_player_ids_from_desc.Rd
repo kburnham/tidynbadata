@@ -21,6 +21,7 @@ Given a sentence of data from ESPN play by play about a substituon, return the p
 Other audit_functions: 
 \code{\link{generate_substitution_row_from_desc}()},
 \code{\link{generate_substitution_row}()},
-\code{\link{read_boxscore_screen_shot}()}
+\code{\link{read_boxscore_screen_shot}()},
+\code{\link{remove_pbp}()}
 }
 \concept{audit_functions}

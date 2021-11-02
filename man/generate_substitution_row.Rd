@@ -33,6 +33,7 @@ generate a row of substitution data for a pbp data.frame. This can be dput into 
 Other audit_functions: 
 \code{\link{generate_substitution_row_from_desc}()},
 \code{\link{get_player_ids_from_desc}()},
-\code{\link{read_boxscore_screen_shot}()}
+\code{\link{read_boxscore_screen_shot}()},
+\code{\link{remove_pbp}()}
 }
 \concept{audit_functions}

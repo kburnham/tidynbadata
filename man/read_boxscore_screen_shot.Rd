@@ -19,6 +19,7 @@ convert a screen shot of ESPN playing time data to a data.frame
 Other audit_functions: 
 \code{\link{generate_substitution_row_from_desc}()},
 \code{\link{generate_substitution_row}()},
-\code{\link{get_player_ids_from_desc}()}
+\code{\link{get_player_ids_from_desc}()},
+\code{\link{remove_pbp}()}
 }
 \concept{audit_functions}
