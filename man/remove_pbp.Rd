@@ -6,6 +6,9 @@
 \usage{
 remove_pbp(game_id)
 }
+\arguments{
+\item{game_id}{an msf game id}
+}
 \value{
 a Boolean indicting if the remove operation was successful
 }

@@ -21,7 +21,6 @@ tag a pbp datset according to players that must be, or must not be, in the curre
 }
 \seealso{
 Other lineup_helpers: 
-\code{\link{compare_lineups}()},
 \code{\link{get_lineup_initials}()},
 \code{\link{get_lineup_last_names}()},
 \code{\link{subset_pbp_by_player_ids}()}

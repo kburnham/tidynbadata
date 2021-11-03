@@ -29,3 +29,8 @@ a tibble with summary statistics for each unique lineup in the provided data
 \description{
 Summarize the performance of each unique lineup in the provided pbp data
 }
+\seealso{
+Other summarize_lineup: 
+\code{\link{compare_lineups}()}
+}
+\concept{summarize_lineup}

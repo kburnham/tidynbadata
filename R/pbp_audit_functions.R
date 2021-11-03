@@ -271,7 +271,7 @@ generate_substitution_row_from_desc <- function(desc, player_data, quarter, elap
 
 #' Delete an archived processed play-by-play data set. Typically this is done when we know that it contains errors and want to force a reprocessing
 #'
-#' @param game_id
+#' @param game_id an msf game id
 #' @export
 #' @family audit_functions
 #' @return a Boolean indicting if the remove operation was successful

@@ -109,16 +109,10 @@ sum(d$min)
 apbp <- bind_rows(all_pbps)
 
 
-
-
-
-
-
-
-lineup1 = list(includes = c(17181, 9282),
+lineup1 = list(includes = c(17181),
                excludes = c())
 lineup2 = list(includes = c(9282),
-               excludes = 17181)
+               excludes = c())
 #debugonce(compare_lineups)
 cl_test <- compare_lineups(apbp, lineup1 = lineup1,
                 lineup2 = lineup2)
