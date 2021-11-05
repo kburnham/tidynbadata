@@ -37,14 +37,16 @@ plot_lineup_comparision <- function(lineup_data) {
     ggplot2::geom_text(ggplot2::aes(label = round(min, 3)), vjust = 1.1, color = 'white') +
     ggplot2::theme_bw() +
     ggplot2::scale_fill_manual(name = 'lineup', values = colors) +
-    ggplot2::xlab('lineup')
+    ggplot2::xlab('lineup') +
+    ggtitle('Minutes Played')
 
   possessions_plot <- lineup_data %>% dplyr::select(lineup, poss) %>% ggplot2::ggplot(ggplot2::aes(x = reorder(lineup, -poss), y = poss, fill = lineup)) +
     ggplot2::geom_bar(stat = 'identity') +
     ggplot2::geom_text(ggplot2::aes(label = round(poss, 3)), vjust = 1.1, color = 'white') +
     ggplot2::theme_bw() +
     ggplot2::scale_fill_manual(name = 'lineup', values = colors) +
-    ggplot2::xlab('lineup')
+    ggplot2::xlab('lineup') +
+    ggtitle('Possessions')
 
   pace_plot <- lineup_data %>% dplyr::select(lineup, pace) %>%
     ggplot2::ggplot(ggplot2::aes(x = reorder(lineup, -pace), y = pace, fill = lineup)) +
@@ -52,7 +54,8 @@ plot_lineup_comparision <- function(lineup_data) {
     ggplot2::geom_text(ggplot2::aes(label = round(pace, 2)), vjust = 1.1, color = 'white') +
     ggplot2::theme_bw() +
     ggplot2::scale_fill_manual(name = 'lineup', values = colors) +
-    ggplot2::xlab('lineup')
+    ggplot2::xlab('lineup') +
+    ggtitle('Pace')
 
   plus_minus_per_plot <- lineup_data %>% dplyr::select(lineup, `+/- min`) %>%
     ggplot2::ggplot(ggplot2::aes(x = reorder(lineup, -`+/- min`), y = `+/- min`, fill = lineup)) +
@@ -60,7 +63,8 @@ plot_lineup_comparision <- function(lineup_data) {
     ggplot2::geom_text(ggplot2::aes(label = round(`+/- min`, 3)), vjust = 1.1, color = 'white') +
     ggplot2::theme_bw() +
     ggplot2::scale_fill_manual(name = 'lineup', values = colors) +
-    ggplot2::xlab('lineup')
+    ggplot2::xlab('lineup') +
+    ggtitle('+\\-')
 
 
   return(list(factors = factors_plot,
