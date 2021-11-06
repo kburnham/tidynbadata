@@ -25,7 +25,8 @@ plot_lineup_comparision <- function(lineup_data) {
     ggplot2::facet_wrap(~name, ncol = 2) +
     ggplot2::coord_cartesian() +
     ggplot2::theme_bw() +
-    ggplot2::scale_fill_manual(name = 'lineup', values = colors)
+    ggplot2::scale_fill_manual(name = 'lineup', values = colors) +
+    ggtitle('Advanced Stats')
 
   ## unique line ups and unique games can be part of a table (or indicators)
   game_data <- lineup_data %>% dplyr::select(lineup, lineups, unique_lineup_count, games, unique_game_count)

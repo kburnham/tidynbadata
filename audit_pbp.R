@@ -34,7 +34,7 @@ audit_pof_vec(all_pbps[[length(gs)]], team = 83, pt = compute_game_playing_time(
 
 
 
-game_id <- 66770
+game_id <- 66799
 
 
 
@@ -91,7 +91,7 @@ substitutions <- pbp %>% select(gs_description, gs_quarter, gs_quarter_seconds_e
 view(substitutions)
 
 # row_from_desc ----
-sen <- "Mitchell Robinson enters the game for Taj Gibson"
+sen <- "Mitchell Robinson enters the game for Nerlens Noel"
 quarter <- 3
 elp <- 0
 get_player_ids_from_desc(sen, player_data)

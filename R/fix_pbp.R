@@ -367,6 +367,37 @@ fix_pbp <- function(raw_msf_pbp) {
   }
 
 
+  if (game_id == 66799) {
+    new_row <- structure(list(description = "Kemba Walker added for Derrick Rose",
+                   substitution.incomingPlayer.id = 9129L, substitution.outgoingPlayer.id = 9142L,
+                   total_elapsed_seconds = 1440, substitution.team.abbreviation = "NYK",
+                   substitution.team.id = 83L, substitution.incomingPlayer.lastName = "Walker",
+                   substitution.incomingPlayer.firstName = "Kemba", substitution.incomingPlayer.position = "PG",
+                   substitution.incomingPlayer.jerseyNumber = 8L, substitution.outgoingPlayer.lastName = "Rose",
+                   substitution.outgoingPlayer.firstName = "Derrick", substitution.outgoingPlayer.position = "PG",
+                   substitution.outgoingPlayer.jerseyNumber = 4L, playStatus.quarter = 3L,
+                   playStatus.secondsElapsed = 0L), class = c("tbl_df", "tbl",
+                                                              "data.frame"), row.names = c(NA, -1L))
+
+    new_row2 <- structure(list(description = "Mitchell Robinson added for Nerlens Noel",
+                               substitution.incomingPlayer.id = 15282L, substitution.outgoingPlayer.id = 9413L,
+                               total_elapsed_seconds = 1440, substitution.team.abbreviation = "NYK",
+                               substitution.team.id = 83L, substitution.incomingPlayer.lastName = "Robinson",
+                               substitution.incomingPlayer.firstName = "Mitchell", substitution.incomingPlayer.position = "C",
+                               substitution.incomingPlayer.jerseyNumber = 23L, substitution.outgoingPlayer.lastName = "Noel",
+                               substitution.outgoingPlayer.firstName = "Nerlens", substitution.outgoingPlayer.position = "C",
+                               substitution.outgoingPlayer.jerseyNumber = 3L, playStatus.quarter = 3L,
+                               playStatus.secondsElapsed = 0L), class = c("tbl_df", "tbl",
+                                                                          "data.frame"), row.names = c(NA, -1L))
+
+    plays <- bind_rows(plays %>% slice(1:241),
+                       new_row,
+                       new_row2,
+                       plays %>% slice(242:nrow(plays)))
+
+  }
+
+
 
 
   # need to reattach the fixed play data here
