@@ -397,6 +397,50 @@ fix_pbp <- function(raw_msf_pbp) {
 
   }
 
+  if (game_id == 66818) {
+    new_row <- structure(list(description = "Obi Toppin added for RJ Barrett",
+                              substitution.incomingPlayer.id = 27591L, substitution.outgoingPlayer.id = 17181L,
+                              total_elapsed_seconds = 720, substitution.team.abbreviation = "NYK",
+                              substitution.team.id = 83L, substitution.incomingPlayer.lastName = "Toppin",
+                              substitution.incomingPlayer.firstName = "Obi", substitution.incomingPlayer.position = "PF",
+                              substitution.incomingPlayer.jerseyNumber = 1L, substitution.outgoingPlayer.lastName = "Barrett",
+                              substitution.outgoingPlayer.firstName = "RJ", substitution.outgoingPlayer.position = "SG",
+                              substitution.outgoingPlayer.jerseyNumber = 9L, playStatus.quarter = 2L,
+                              playStatus.secondsElapsed = 0L), class = c("tbl_df", "tbl",
+                                                                         "data.frame"), row.names = c(NA, -1L))
+    new_row2 <- structure(list(description = "Immanuel Quickley added for Julius Randle",
+                               substitution.incomingPlayer.id = 27724L, substitution.outgoingPlayer.id = 9282L,
+                               total_elapsed_seconds = 720, substitution.team.abbreviation = "NYK",
+                               substitution.team.id = 83L, substitution.incomingPlayer.lastName = "Quickley",
+                               substitution.incomingPlayer.firstName = "Immanuel", substitution.incomingPlayer.position = "PG",
+                               substitution.incomingPlayer.jerseyNumber = 5L, substitution.outgoingPlayer.lastName = "Randle",
+                               substitution.outgoingPlayer.firstName = "Julius", substitution.outgoingPlayer.position = "C",
+                               substitution.outgoingPlayer.jerseyNumber = 30L, playStatus.quarter = 2L,
+                               playStatus.secondsElapsed = 0L), class = c("tbl_df", "tbl",
+                                                                          "data.frame"), row.names = c(NA, -1L))
+
+    plays <- bind_rows(plays %>% slice(1:98),
+                       new_row,
+                       new_row2,
+                       plays %>% slice(99:nrow(plays)))
+
+
+    new_row <- structure(list(description = "Obi Toppin added for Julius Randle",
+                   substitution.incomingPlayer.id = 27591L, substitution.outgoingPlayer.id = 9282L,
+                   total_elapsed_seconds = 2160, substitution.team.abbreviation = "NYK",
+                   substitution.team.id = 83L, substitution.incomingPlayer.lastName = "Toppin",
+                   substitution.incomingPlayer.firstName = "Obi", substitution.incomingPlayer.position = "PF",
+                   substitution.incomingPlayer.jerseyNumber = 1L, substitution.outgoingPlayer.lastName = "Randle",
+                   substitution.outgoingPlayer.firstName = "Julius", substitution.outgoingPlayer.position = "C",
+                   substitution.outgoingPlayer.jerseyNumber = 30L, playStatus.quarter = 4L,
+                   playStatus.secondsElapsed = 0L), class = c("tbl_df", "tbl",
+                                                              "data.frame"), row.names = c(NA, -1L))
+
+    plays <- bind_rows(plays %>% slice(1:320),
+                       new_row,
+                       plays %>% slice(321:nrow(plays)))
+  }
+
 
 
 

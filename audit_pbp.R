@@ -34,7 +34,7 @@ audit_pof_vec(all_pbps[[length(gs)]], team = 83, pt = compute_game_playing_time(
 
 
 
-game_id <- 66799
+game_id <- 66818
 
 
 
@@ -52,6 +52,7 @@ pd <- player_data %>%
 
 
 # load_raw ----
+#devtools::load_all()
 raw <- readRDS(glue('/Users/kevin/tidynbadata_archive/pbp_archive/{game_id}.rds'))
 pbp_raw <- process_msf_pbp(raw)
 pbp <- pbp_raw[[as.character(team$id)]]
@@ -91,8 +92,8 @@ substitutions <- pbp %>% select(gs_description, gs_quarter, gs_quarter_seconds_e
 view(substitutions)
 
 # row_from_desc ----
-sen <- "Mitchell Robinson enters the game for Nerlens Noel"
-quarter <- 3
+sen <- "Obi Toppin enters the game for Julius Randle"
+quarter <- 4
 elp <- 0
 get_player_ids_from_desc(sen, player_data)
 row <- generate_substitution_row_from_desc(sen, player_data = player_data, quarter = quarter, elapsed_time_in_quarter = elp)
