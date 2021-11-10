@@ -5,16 +5,17 @@
 #'
 #'
 #' @param lineup_data data.frame as returned by \code{compare_lineups()}
+#' @palette the RColorBrewer fill palette to use ('Set2' by default)
 #' @export
 #' @family plotting_functions
 #'
 #' @return a list with game data and multiple plots of lineup data
 #'
 
-plot_lineup_comparision <- function(lineup_data) {
+plot_lineup_comparision <- function(lineup_data, palette = 'Set2') {
 
   ## because the 8 factors are all rates, it makes sense to do they separately
-  colors <- RColorBrewer::brewer.pal(4, 'Set2')
+  colors <- RColorBrewer::brewer.pal(4, palette)
   names(colors) <- c('both', 'neither', 'lineup1', 'lineup2')
 
   factors_plot <- lineup_data %>% dplyr::select(lineup, efp, defp, tr, dtr, rr, drr, ftr, dftr) %>%
