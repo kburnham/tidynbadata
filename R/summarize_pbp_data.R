@@ -221,14 +221,35 @@ compute_average_plus_minus <- function(dat, units = 'minute') {
   return(avg_pm)
 }
 
-# compute_eight_factors <- function(dat, ...) {
-#   efp <- compute_effective_field_goal_percentage(dat)
-#   tr <- compute_turnover_rate(dat)
-#   rr <- compute_rebound_rate(dat)
-#   ftr <- compute_free_throw_rate(dat)
-#
-#   all <- list(efp, tr, rr, ftr) %>% flatten() %>% as.tibble()
-#
-#   return(all)
-#
-# }
+
+#' Compute 8 advanced stats factors for a team given a chunk of pbp dat
+#'
+#' @param dat a tibble of pbp data
+#'
+#' @export
+#' @return a single row data.frame with 8 factor stats for a team
+#'
+
+compute_eight_factors <- function(dat, ...) {
+  if (length(unique(dat$team_id)) > 1) stop('input data should all be for the same team\'s games')
+
+  efp <- compute_effective_fgp(dat)
+  defp <- compute_effective_defensive_fgp(dat)
+  tr <- compute_turnover_rate(dat)
+  dtr <- compute_defensive_turnover_rate(dat)
+  rr <- compute_rebound_rate(dat)
+  drr <- compute_defensive_rebound_rate(dat)
+  ftr <- compute_free_throw_rate(dat)
+  dftr <- compute_defensive_free_throw_rate(dat)
+
+  all <- data.frame(efp = efp,
+                    defp = defp,
+                    tr = tr,
+                    dtr = dtr,
+                    rr = rr,
+                    drr = drr,
+                    ftr = ftr,
+                    dftr = dftr)
+
+  return(all)
+}

@@ -31,10 +31,12 @@ games <- mysportsfeedsR::msf_get_results(league = 'nba',
                                          params = list())[['api_json']][['games']]
 audit_pof_vec(all_pbps[[length(gs)]], team = 83, pt = compute_game_playing_time(all_pbps[length(gs)], team = 83), games = games)
 
+#debugonce(compute_eight_factors)
 
+pbps <- bind_rows(all_pbps)
+compute_eight_factors(pbps)
 
-
-game_id <- 66818
+game_id <- 66832
 
 
 
@@ -93,7 +95,7 @@ view(substitutions)
 
 # row_from_desc ----
 sen <- "Obi Toppin enters the game for Julius Randle"
-quarter <- 4
+quarter <- 2
 elp <- 0
 get_player_ids_from_desc(sen, player_data)
 row <- generate_substitution_row_from_desc(sen, player_data = player_data, quarter = quarter, elapsed_time_in_quarter = elp)
