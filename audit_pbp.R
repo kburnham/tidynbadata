@@ -36,7 +36,7 @@ audit_pof_vec(all_pbps[[length(gs)]], team = 83, pt = compute_game_playing_time(
 pbps <- bind_rows(all_pbps)
 compute_eight_factors(pbps)
 
-game_id <- 66832
+game_id <- 66845
 
 
 

@@ -464,6 +464,24 @@ fix_pbp <- function(raw_msf_pbp) {
   }
 
 
+  if (game_id == 66845) {
+    new_row <- structure(list(description = "Obi Toppin added for Julius Randle",
+                              substitution.incomingPlayer.id = 27591L, substitution.outgoingPlayer.id = 9282L,
+                              total_elapsed_seconds = 720, substitution.team.abbreviation = "NYK",
+                              substitution.team.id = 83L, substitution.incomingPlayer.lastName = "Toppin",
+                              substitution.incomingPlayer.firstName = "Obi", substitution.incomingPlayer.position = "PF",
+                              substitution.incomingPlayer.jerseyNumber = 1L, substitution.outgoingPlayer.lastName = "Randle",
+                              substitution.outgoingPlayer.firstName = "Julius", substitution.outgoingPlayer.position = "C",
+                              substitution.outgoingPlayer.jerseyNumber = 30L, playStatus.quarter = 2L,
+                              playStatus.secondsElapsed = 0L), class = c("tbl_df", "tbl",
+                                                                         "data.frame"), row.names = c(NA, -1L))
+    plays <- bind_rows(plays %>% slice(1:104),
+                       new_row,
+                       plays %>% slice(105:nrow(plays)))
+
+  }
+
+
 
 
   # need to reattach the fixed play data here
