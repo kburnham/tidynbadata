@@ -9,24 +9,26 @@ library(glue)
 
 
 authenticate_v2_x(apikey = keyring::key_get('msf_api_key'))
-sched <- get_team_schedule(team = 'Bucks')
+
+sched <- get_team_schedule(team = 'Knicks')
 kgs <- sched %>% filter(status == 'complete') %>% pull(msf_game_id)
 all_pbps <- map(kgs, load_pbp, team = 83)
 
 
 
-all_pbps[[1]]
-pbp <- all_pbps[[1]]
+# all_pbps[[1]]
+pbp <- all_pbps[[4]]
 
 pbp %>% mutate(pof_count = map_int(gs_this_pof_vec, length)) %>% count(pof_count)
 pbp %>% mutate(pof_count = map_int(gs_opp_pof_vec, length)) %>% count(pof_count)
 
-pt <- compute_game_playing_time(all_pbps[[2]], 83)
+pt <- compute_game_playing_time(all_pbps[[1]], 83)
 
 sum(pt$minutes_played)
 
+pd <- get_player_data()
+# pd <- readRDS('~/tidynbadata_archive/player_data_archive/player_data.rds')
 
-pd <- readRDS('~/tidynbadata_archive/player_data_archive/player_data.rds')
 knicks <- pd$api_json$players %>% filter(teamAsOfDate.id == 83)
 knicks <- knicks %>% select(player.id, player.firstName, player.lastName, player.jerseyNumber, player.currentRosterStatus, player.primaryPosition) %>% filter(player.currentRosterStatus == 'ROSTER')
 knicks
@@ -40,7 +42,7 @@ all_games <- mysportsfeedsR::msf_get_results(league = 'nba',
 games <- all_games$api_json$games
 
 
-audit_pof_vec(all_pbps[[2]], 83, pt, games)
+audit_pof_vec(all_pbps[[1]], 83, pt, games)
 
 pbp <- pbp %>% mutate(pof_this_count = map_int(gs_this_pof_vec, length),
                pof_opp_count = map_int(gs_opp_pof_vec, length),
