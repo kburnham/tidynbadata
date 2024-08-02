@@ -8,16 +8,16 @@ library(lubridate)
 library(glue)
 
 
-authenticate_v2_x(apikey = keyring::key_get('msf_api_key'))
+authenticate_v2_x(apikey = 'ccb96ac1-d36b-482d-ab27-29ffff')
 
 sched <- get_team_schedule(team = 'Knicks')
 kgs <- sched %>% filter(status == 'complete') %>% pull(msf_game_id)
-all_pbps <- map(kgs, load_pbp, team = 83)
+all_pbps <- map(kgs[1], load_pbp, team = 83)
 
 
 
 # all_pbps[[1]]
-pbp <- all_pbps[[4]]
+pbp <- all_pbps[[1]]
 
 pbp %>% mutate(pof_count = map_int(gs_this_pof_vec, length)) %>% count(pof_count)
 pbp %>% mutate(pof_count = map_int(gs_opp_pof_vec, length)) %>% count(pof_count)

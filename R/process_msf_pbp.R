@@ -185,7 +185,7 @@ compute_tes <- function(x, y) {
 #' @importFrom dplyr transmute case_when if_else
 #' @return a data.frame with customized pbp data
 #'
-customize_msf_pbp <- function(plays, team_id, opponent_id, loc) {
+customize_msf_pbp# <- function(plays, team_id, opponent_id, loc) {
 
   loc <- toupper(loc)
   if (!loc %in% c('HOME', 'AWAY')) stop('loc must be "home" or "away"')
